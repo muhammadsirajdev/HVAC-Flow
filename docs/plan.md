@@ -67,7 +67,7 @@ class InboundMessage(TypedDict):
     case_id: int | None
     text: str
     thread_id: str          # LangGraph thread: chat session / case / phone number
-    verified: bool          # web=False; email=DKIM/DMARC result; whatsapp=True
+    verified: bool          # web=False; email=sender is the booking's address; whatsapp=True
     provider_msg_id: str    # for dedupe
     attachments: list[Attachment]
 ```
@@ -108,7 +108,7 @@ Steps 1 to 7 happen in one chat visit. The email thread started at step 6 carrie
 | Channel | Identity | Trust |
 |---|---|---|
 | Website chat | Email and phone the visitor types | Not verified: enough to book, not to change a booking |
-| Email | Sender address, DKIM or DMARC checked | Verified when the check passes |
+| Email | Sender address matches the booking's email (no headers for DKIM/DMARC, section 6.5) | Verified when it matches |
 | WhatsApp | Sender's phone number | Verified by WhatsApp |
 
 ### 3.2 Knowledge base (RAG) — built
@@ -126,7 +126,7 @@ Steps 1 to 7 happen in one chat visit. The email thread started at step 6 carrie
 - **Answer:** `search_kb(query, k=4, min_score, where)` returns passages above the cosine-similarity threshold, best first; `format_passages()` renders them for the prompt. Metadata filters are available (`category`, `service_type`, `emergency`, `source_doc`).
 - **Not found:** an empty result means the agent says it doesn't know, then offers to book a visit or gives the phone number.
 - **Threshold:** `KB_MIN_SCORE` defaults to 0.35 (text-embedding-3-large scores are lower than older models); `python -m backend.rag.evaluate` reports hit@1, hit@k, MRR and suggests a value from real vs off-topic questions.
-- **Graph tool:** `backend.tools.kb.search_kb` is a LangChain `@tool` ready to bind to the agent.
+- **Graph use:** Run A calls `backend.rag.search_kb_multi` through its deps.
 
 ### 3.3 Agent core and tool permissions
 
@@ -165,7 +165,7 @@ The tools read `case_id`, `customer_id` and `verified` from **graph state**, nev
 |---|---|
 | `customers` | customer_id, name, email, phone, address |
 | `cases` | case_id, customer_id, status, channel it started on, email_thread_id, timestamps |
-| `bookings` | booking_id, case_id, slot, service, address, reminded, technician |
+| `bookings` | booking_id, case_id, slot, service, address, reminded, technician, pending change (offered slots + when) |
 | `slots` | Open times (or the client's booking software later) |
 | `messages` | Every message in and out, with channel and provider IDs (dedupe) |
 | ~~`kb_chunks`~~ | Not in Postgres: the KB lives in Chroma (section 3.2) |
@@ -221,6 +221,8 @@ CREATE TABLE bookings (
   technician  TEXT,
   reminded    BOOLEAN NOT NULL DEFAULT false,
   active      BOOLEAN NOT NULL DEFAULT true,
+  pending_slot_ids  BIGINT[],                 -- times offered for a change; not held
+  pending_since     TIMESTAMPTZ,              -- NULL = no change in progress
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE UNIQUE INDEX one_active_booking_per_slot ON bookings(slot_id) WHERE active;
@@ -264,12 +266,14 @@ stateDiagram-v2
   booked --> cancelled: cancel_booking
   open --> needs_person: agent stuck
   booked --> needs_person: ISSUE 123
-  needs_person --> [*]: a person sets the next status
+  needs_person --> booked: RESUME 123 (active booking)
+  needs_person --> open: RESUME 123 (no booking)
   closed --> [*]: a later message opens a new case
 ```
 
 - Every arrow is a function or a Slack command, never a model decision.
-- `needs_person` is the safe stop: the AI stops replying on that case until someone in the office decides what comes next.
+- `needs_person` is the safe stop: the AI stops replying on that case until someone in the office decides what comes next, either by handling it by hand or with `RESUME 123` in Slack (section 6.6), which returns the case to `booked` if it has an active booking, otherwise `open`.
+- A reschedule keeps the case `booked`. The change in progress lives on the booking (`pending_slot_ids`), not in the case status, so reminders and `DONE 123` keep working.
 - **(proposed)** Implement this as a single `cases.transition(case_id, to, reason)` that checks an allowed-transitions table and writes an audit row. Every status write goes through it.
 
 ---
@@ -338,44 +342,85 @@ Keywords such as gas smell, sparks, smoke or flooding (checked by **code** in th
 
 ### 6.1 Waking up
 
-The email MCP can read and send but doesn't announce new mail. An APScheduler job runs **every 1 to 2 minutes**, fetches unread emails and handles them **oldest first**. A handled email gets the `ai-handled` label and its message ID is stored in `messages`. Push notifications (Gmail watch or Graph subscriptions) can replace polling later.
+The email MCP can read and send but doesn't announce new mail. An APScheduler job runs **every 1 to 2 minutes** (`max_instances=1`, so two polls never overlap) and handles new emails **oldest first**. Push notifications (Gmail watch or Graph subscriptions) can replace polling later.
+
+**Gmail MCP tools used** (Klavis, 10 offered): `gmail_search_emails` (candidates), `gmail_read_email` (returns the whole thread), `gmail_send_email` (with `threadId` for replies), `gmail_modify_email` (remove `UNREAD`). The server returns **no raw headers** (no `Authentication-Results`, `Auto-Submitted`, `List-Unsubscribe`, `Reply-To` or `Message-ID`) and has **no label create/list tool**, which shapes 6.1, 6.2 and 6.5 below.
+
+**What counts as new is not the unread flag.** Someone in the office opening the inbox would mark an email read and hide it from the agent. The poll searches `EMAIL_POLL_QUERY` (inbox, last 3 days, not from us, Primary only) and skips any Gmail message ID already in `messages`. **Every email looked at is stored by ID**, so it's read once: handled ones with their case, ignored ones with only the reason (no content). Handled emails are marked read for tidiness. There's no `ai-handled` label, because the MCP can't create one or look up its ID.
+
+**Order of work per email:** run the turn → send the reply (retried once) → store the inbound and outbound messages → mark read. If the reply can't be sent, Slack gets the reply text to send by hand and the email is still stored: the turn isn't re-run, so a booking is never made twice. If the **AI** fails, nothing is stored and the email is retried next poll (Slack after 3 failures in a row).
+
+**Several emails in one thread between polls** are handled together as one turn with one reply.
 
 ### 6.2 Filtering (code, before the AI sees anything)
 
+Only mail meant for the agent is taken: **replies in a case's thread** (or with the case's `[Case #N]` from the case's customer), **mail sent to `EMAIL_AGENT_ADDRESS`**, and **website form emails**. Everything else in the mailbox is ignored, which matters when the inbox is also a personal one (use a plus address like `you+hvac@gmail.com`).
+
 Skip:
-- Auto-replies: `Auto-Submitted` set to anything but `no`; `Precedence: bulk|junk|list`; senders like `no-reply` or `mailer-daemon`.
-- Newsletters: any `List-Unsubscribe` header.
-- The business's own outgoing emails.
+- Auto-replies, by sender (`no-reply`, `mailer-daemon`, `postmaster`, `bounce`) or subject ("Automatic reply", "Out of Office", "Undeliverable", "Delivery Status Notification"…), **except** the website form senders below. Headers aren't available (6.1).
+- Newsletters: excluded by the poll query (Gmail's Promotions, Social, Updates and Forums categories).
+- The business's own outgoing emails (`-from:me`).
 - Threads that already got **5 AI replies in the last hour**. These go to a person.
+
+**Emergency check:** the same `guard` as the chatbot (section 5.4) runs on the email text. A match sends the **approved** safety message and phone number as the reply, posts an urgent Slack alert, and skips the AI.
+
+### 6.2.1 Website enquiry form emails
+
+The site's enquiry form emails the same inbox, but from the website's own address (`wordpress@…`, `noreply@…`), with the customer's details in the body ("Name:", "Email:", "Phone:", "Message:").
+
+- `EMAIL_FORM_SENDERS` in config lists those addresses. They pass the filter.
+- **Code** parses the customer's name, email, phone and message from the form email (and validates them as in section 5.1 step 3). Replies go to **that parsed email**, starting a new thread with `[Case #N]` in the subject. They never go back to the website address.
+- Form enquiries may **ask questions and book**. They can **never change or cancel**: anyone can type any address into a form. Once booked, the confirmation email becomes the verified thread for later changes.
+- A form email that can't be parsed goes to a person.
 
 ### 6.3 Matching emails to cases (first match wins)
 
 1. **Thread ID** already linked to a case.
-2. **`[Case #N]` in the subject**, even in a brand-new email.
-3. **Sender with exactly one open case.**
+2. **`[Case #N]` in the subject**, even in a brand-new email, but only from that case's customer (otherwise a stranger quoting a number could read the case).
+3. **Sender with exactly one open case.** This joins the email to the conversation only; it does **not** count for changes or cancellations (section 6.5).
 4. **No match:** a new case, under the existing customer if the address is known, otherwise under a new customer.
 
-A reply in the thread of a closed case is handled by what it says: a plain "thanks" gets no reply; a new request opens a new case, and the reply carries the new case number.
-**(proposed)** Detect "thanks only" with a tiny classifier call or a regex plus a length check. It's the one place the model is allowed to say "no reply needed".
+A reply in the thread of a closed case is handled by what it says: a plain "thanks" gets no reply; a new request opens a new case (the thread moves to it), and the reply carries the new case number.
+"Thanks only" is a code check: short, a thanks word, no question or request word. It applies only to closed cases and new mail: on an open case "ok, thanks" may be the yes to a summary.
 
 ### 6.4 The conversation
 
 - The agent sees **this case's messages in full**, plus a one-line summary of each past case, never an old case's whole thread.
 - It answers from the KB and books with the same steps as the chatbot; phone and address are asked for by email.
-- Every reply goes to the **original sender**, in the **same thread**, with `[Case #123]` kept in the subject.
+- Every reply goes to the **original sender** (or the parsed customer address for form emails), in the **same thread**. The subject stays the thread's own ("Re: …"), since Gmail only keeps a reply in the thread when the subject matches. The case number goes in the signature (and is already in the subject of our confirmation emails). A form enquiry gets a new email with `[Case #N] Your enquiry to …` as the subject.
+- After a booking or change, the reply **is** the code-written confirmation (one email, not a reply plus a confirmation).
+- A customer who replies days later continues the same conversation: the thread ID finds the case, and the case's LangGraph thread restores everything said before.
+
+### 6.4.1 Emails the agent can't handle
+
+If the agent can't tell what the customer wants, or the request is outside what it may do, the case goes to `needs_person` and Slack gets an alert with the email. **The AI writes nothing to the customer.** The customer gets only a fixed, code-written acknowledgement ("Thanks, we've received your message and a member of our team will reply shortly. Case #123"). From then on the AI stays silent on that case until the office sends `RESUME 123` or handles it by hand.
 
 ### 6.5 Changing or cancelling a booking
 
-Allowed only when **all three** hold:
-1. The email is matched to that case by thread ID or case number.
-2. The sender is the customer on the case.
-3. The email passes **DKIM or DMARC**, read by code from the `Authentication-Results` header.
+Allowed when the email comes **from the address on the booking** (the email given in the chat or used to book by email), whether it's a reply or a brand-new email, and the visit is more than 2 hours away. A booking made in the website chat can therefore be changed by email from that same address.
 
-If any check fails, the agent replies that it couldn't confirm the request, asks them to reply from their registered address, and posts the case to Slack. **A change within 2 hours of the visit always goes to a person.**
+**DKIM/DMARC can't be checked:** the Gmail MCP gives no `Authentication-Results` header, so the sender address is taken as shown; Gmail's own spam filtering drops most forged mail. A DKIM/DMARC check can be added with a Gmail tool that returns headers.
+
+From any other address nothing changes: the agent replies that it couldn't confirm the request, asks them to email from the address they booked with, and posts the case to Slack. Form emails never pass (section 6.2.1). **A change within 2 hours of the visit always goes to a person.**
+
+**The change flow (email):**
+1. "I want to update my booking" from the booking's address: the agent replies with the **current booking details** (case, service, time, address, name, phone, email, problem) and asks what to change.
+2. The customer says what to change, and the agent **does it at once**, with no extra yes/no:
+   - an exact day and time ("Friday at 10 AM") that's open → moved;
+   - one of the offered times ("the second one", "Friday 10 AM") → moved;
+   - a new address or problem description → changed, same time;
+   - a day or time that isn't open, or only a day → up to three closest open times are offered and stored in `bookings.pending_slot_ids` with `pending_since`.
+3. **The original booking stands** until the change is made. Offered times are **not held**: a pick is checked again, and if it's gone, new times are offered.
+4. On success: the pending fields are cleared, the case stays `booked`, `reminded` resets, the **updated booking details** go to the customer as the reply, and **only after that email is sent** does Slack #bookings get the update (old → new, section 6.6).
+
+**If the customer goes quiet:**
+- No reply, original visit more than 24 hours away: nothing happens; the original booking stands and the conversation can continue whenever they reply.
+- Original visit within 24 hours and a change still pending: Slack alert ("Case 123 asked to move, no answer, visit tomorrow 10 AM; please call").
+- A reply after the original visit time has passed: the pending change is void and the case goes to a person.
 
 ### 6.6 Slack
 
-**#bookings:** each new booking, change or cancellation, with the case number, customer, service, time, address and phone.
+**#bookings:** each new booking, change or cancellation, with the case number, customer, service, time, address and phone. A change shows old → new, for example `🔁 Case #123 rescheduled: Thu 16 Oct 10:00 AM → Fri 17 Oct 2:00 PM`, followed by the full booking details.
 
 **#status:** employees post one line per finished job.
 
@@ -383,7 +428,8 @@ If any check fails, the agent replies that it couldn't confirm the request, asks
 |---|---|
 | `DONE 123` | Case 123 → done; a thank-you email goes out in its thread; the case → closed |
 | `ISSUE 123 <note>` | Case 123 → needs_person; nothing is sent to the customer |
-| Anything else | The bot replies with the two formats above |
+| `RESUME 123` | Case 123 leaves needs_person (→ booked if it has an active booking, otherwise open); the AI replies again on its next email |
+| Anything else | The bot replies with the three formats above |
 
 After acting, the bot replies in the Slack thread ("Case 123 marked done, thank-you sent"). This needs a **Slack app** with `chat:write` and `channels:history` (or `groups:history`) plus an Events API subscription. A posting-only webhook isn't enough.
 
@@ -397,8 +443,15 @@ A daily job (6 PM, business time zone) emails a reminder the day before each vis
 - [ ] Five back-and-forth emails stay on one case, and the booking lands in Slack
 - [ ] A new email with `[Case #123]` in the subject joins case 123
 - [ ] An out-of-office reply gets no answer
-- [ ] A change request from the customer's verified address moves the booking
+- [ ] A change request from the customer's verified address moves the booking; the customer gets a change confirmation and Slack shows old → new
 - [ ] The same request from a different address changes nothing and reaches Slack
+- [ ] A change request in a brand-new email from the booking's address (e.g. a chat booking) moves the booking
+- [ ] A requested time that's taken gets up to three offers; a reply three days later picks one and the booking moves
+- [ ] An offered time taken in the meantime gets fresh offers, and the original booking is untouched
+- [ ] A website form enquiry gets a reply at the customer's address (not the website's) and can book, but a change request from a form is refused
+- [ ] "I smell gas" by email gets the safety message and an urgent Slack alert, no AI reply
+- [ ] An email the agent can't handle gets only the fixed acknowledgement; the case goes to needs_person and Slack; `RESUME 123` hands it back
+- [ ] An email opened in Gmail by staff before the poll is still handled; a handled email is never answered twice
 - [ ] `DONE 123` in Slack sends the thank-you and closes the case
 - [ ] A later email from the same customer opens Case 124 under the same customer
 - [ ] Tomorrow's visits get a reminder today, once
@@ -440,9 +493,9 @@ The tools are limited so tightly that a fooled model can only send a bad reply. 
 ### 8.1 Guardrails
 
 - **Customer text is data, never instructions.** The prompt says so, and more importantly, no tool can do what an email might demand: there's no forward tool and no way to send to an address the AI chooses.
-- **Replies go to the sender only.** `send_reply` takes the conversation, not an address; code fills in the recipient and thread.
+- **Replies go to the sender only.** `send_reply` takes the conversation, not an address; code fills in the recipient and thread. The one exception, website form emails, uses the customer address that **code** parsed from the form, never one the model chose.
 - **Status changes live in code** (`booked`, `done`, `closed`, `cancelled`).
-- **Changes need a verified sender.** Email: case match + own address + DKIM/DMARC pass. Chat: never. WhatsApp: the verified number.
+- **Changes need a verified sender.** Email: sent from the booking's email address. Website form: never. Chat: never. WhatsApp: the verified number.
 - **Prices come from the KB only.** No unapproved discounts or quotes.
 - **Fixed safety wording** for emergencies.
 - **Loop and flood limits:** automatic emails are skipped; at most 5 AI replies per thread per hour.
@@ -460,7 +513,10 @@ The tools are limited so tightly that a fooled model can only send a bad reply. 
 | Sender not verified for a change | Nothing changes; customer asked to reply from their registered address | Slack |
 | DONE for an unknown or unbooked case | Nothing changes; the bot explains in Slack | The employee who posted |
 | Duplicate email, WhatsApp message or Slack post | Ignored by its stored ID | Nobody needs to |
-| A message the agent can't handle | Case → needs_person; the AI stops replying on it | Slack |
+| A message the agent can't handle | Case → needs_person; only the fixed acknowledgement is sent; the AI stops replying on it until `RESUME` | Slack |
+| Reply sent but labelling fails | Next tick sees the stored message ID and doesn't reply again | Nobody needs to |
+| Change pending, no answer, visit within 24 hours | Original booking stands | Slack: "please call" |
+| Website form email can't be parsed | Nothing sent | Slack, case needs_person |
 
 ---
 
@@ -500,48 +556,45 @@ This is the layout as it exists on disk. `backend/` is the uv project; the Pytho
 ```
 hvacX/
 ├── README.md
-├── plan.md
-├── docker-compose.yml               # Postgres + pgvector for local dev
+├── docker-compose.yml               # Postgres for local dev
 ├── .gitignore
 ├── docs/
+│   ├── plan.md                      # this file
 │   └── Speed-to-Lead Scope Chatbot, Email and WhatsApp.docx
-├── backend/
-│   ├── pyproject.toml / uv.lock / requirements.txt / .python-version
-│   ├── .env  (git-ignored)  ·  .env.example
-│   ├── knowledge/mdcold/             # KB source .md files (business docs)
-│   │   ├── 00_business_overview.md … 10_other.md
-│   │   ├── 03_services/  04_products/
-│   │   └── _meta/coverage_report.md  # crawl report; NOT ingested
-│   ├── migrations/versions/          # Alembic (run `alembic init` here in step 1)
-│   ├── scripts/                      # seed_demo_client, reindex_kb, demo_reset, chat_cli
-│   ├── tests/
-│   │   ├── unit/  graphs/  rag/  integration/
-│   │   ├── fixtures/{emails,slack,whatsapp}/
-│   │   └── conftest.py
-│   └── src/backend/
-│       ├── __init__.py               # keeps main() for the `backend` script entry
-│       ├── main.py                   # FastAPI app: routers + scheduler startup
-│       ├── config.py                 # pydantic-settings
-│       ├── core/                     # logging, errors, timeutil
-│       ├── api/                      # chat, slack_events, whatsapp_webhook, admin, health
-│       ├── schemas/                  # chat.py, messages.py (InboundMessage)
-│       ├── graphs/
-│       │   ├── common/               # state, checkpointer, llm
-│       │   └── run_a_chat/ run_b_email/ run_c_slack_status/ run_d_reminders/ run_e_whatsapp/
-│       │                             #   each: graph.py, nodes.py (+ prompts/ for AI runs)
-│       ├── tools/                    # booking, customers, cases, kb, notify, guardrails, validation
-│       ├── rag/                      # loader, chunking, validation, report, embeddings,
-│       │                             #   vectorstore, ingest, retriever, evaluate, prompts/
-│       ├── mcp/                      # client, email_mcp, slack_mcp
-│       ├── channels/                 # web, email, whatsapp adapters
-│       ├── scheduler/jobs.py         # Run B every 1–2 min, Run D daily
-│       ├── db/                       # base, models, session, repositories
-│       └── templates/                # email/*.html.j2, whatsapp/, safety_message.txt
-├── widget/
-│   ├── src/widget.js                 # embeddable chat script
-│   └── demo/index.html               # demo page for build step 5
-└── mcp_servers/email_server/         # only if we run our own email MCP
+└── backend/
+    ├── pyproject.toml / uv.lock / requirements.txt / .python-version
+    ├── .env  (git-ignored)  ·  .env.example
+    ├── knowledge/mdcold/             # KB source .md files (business docs)
+    │   ├── 00_business_overview.md … 10_other.md, 03_services/, 04_products/
+    │   ├── _meta/99_coverage_report.md   # crawl report; NOT ingested
+    │   └── build/                    # chunks, checks report, eval reports (generated)
+    ├── data/chroma/                  # vector store (git-ignored)
+    ├── scripts/                      # seed_demo_client, chat_cli, list_mcp_tools,
+    │                                 #   send_pending_notifications
+    ├── tests/
+    │   ├── conftest.py
+    │   ├── graphs/test_run_a_chat.py
+    │   └── rag/                      # offline pipeline tests + dataset_eval.json
+    └── src/backend/
+        ├── main.py                   # FastAPI app: routers
+        ├── config.py                 # pydantic-settings
+        ├── core/                     # errors, timeutil
+        ├── api/                      # chat, health, dev (test console)
+        ├── schemas/chat.py           # API request/response models
+        ├── static/test_console.html  # dev test console (DEV_UI=true)
+        ├── graphs/
+        │   ├── common/               # state, checkpointer, llm
+        │   ├── run_a_chat/           # graph, nodes, deps, schemas, prompts/   (built)
+        │   └── run_b_email/          # graph, nodes, deps, mail (rules), poller (built)
+        ├── tools/                    # booking, customers, cases, notify, guardrails, validation
+        ├── rag/                      # loader, chunking, validation, report, embeddings,
+        │                             #   vectorstore, ingest, retriever, evaluate, evaluate_qa, prompts/
+        ├── mcp/                      # client, email_mcp, slack_mcp (Klavis)
+        ├── db/                       # schema.sql, session, init_db
+        └── templates/                # email/*.j2, safety_message.txt
 ```
+
+`scheduler.py` runs the inbox poll (APScheduler). Packages for later runs (`run_c_slack_status/`, `run_d_reminders/`, `run_e_whatsapp/`, the embeddable `widget/`) are added when each is built.
 
 Where code goes:
 - `api/` only parses requests and calls a graph or channel adapter; no business logic.
@@ -586,28 +639,32 @@ The email timer sets how long a customer waits: at 15 minutes, each reply could 
 
 | Node | Kind | What it does | If it fails |
 |---|---|---|---|
-| fetch_unread | Code | Reads unread emails through the MCP | MCP unreachable → retry next tick; Slack after 10 min |
-| filter | Code | Skips auto-replies, newsletters and own mail; >5 AI replies/hr → person | Over the limit → needs_person |
-| match_case | Code | Thread ID → [Case #N] → single open case → new case | |
-| verify_sender | Code | DKIM/DMARC pass + sender is the case's customer → `verified` | Not verified → change tools withheld |
-| agent | AI | This case in full + one-line past-case summary | Model down → email stays unread for the next tick |
-| tools | Code | As Run A + change/cancel when verified; within 2 hours → person | |
-| reply | Code | To the sender only, same thread, keeps [Case #N] | |
-| mark_handled | Code | Labels `ai-handled`, stores the message ID | |
-| needs_person | Person alerted | AI stops on this case; Slack alert | |
+| fetch_new | Code | `EMAIL_POLL_QUERY` results not in `messages`, read per thread (one turn per thread) | MCP unreachable → retry next tick; Slack after 10 min |
+| filter | Code | Only mail for the agent (case thread, agent address, form sender); skips auto-replies; >5 AI replies/hr → person | Over the limit → needs_person |
+| parse_form | Code | Form emails only: extracts and validates the customer's name, email, phone, message | Unparseable → needs_person |
+| guard | Code | Emergency words → safety_reply | |
+| safety_reply | Person alerted | Approved safety message + phone; urgent Slack alert | |
+| match_case | Code | Thread ID → [Case #N] → single open case → new case; a case in needs_person stops here | |
+| verify_sender | Code | Sender is the case's customer (booking email) → `verified`; form emails never | Not verified → change tools withheld |
+| agent | AI | This case in full + one-line past-case summary + any pending change | Model down → email stays unlabelled for the next tick |
+| tools | Code | As Run A + change/cancel when verified (offers stored as pending; within 2 hours → person) | Time taken → new times offered |
+| reply | Code | To the sender (or parsed form address), same thread, keeps [Case #N] | |
+| mark_handled | Code | After the send: stores the message IDs, marks read | Send fails twice → Slack: reply by hand |
+| needs_person | Person alerted | Fixed acknowledgement only; AI stops on this case until `RESUME`; Slack alert | |
 
 ### Run C: Slack status
 
 | Node | Kind | What it does | If it fails |
 |---|---|---|---|
-| parse | Code | `DONE 123` or `ISSUE 123 <note>` | Other text → help_reply |
+| parse | Code | `DONE 123`, `ISSUE 123 <note>` or `RESUME 123` | Other text → help_reply |
 | validate_case | Code | Case exists, is booked, post not handled before | Invalid → reason posted in Slack |
 | mark_done | Code | Case → done | |
 | send_thanks | Code | Thank-you in the email thread, or a WhatsApp template | Send fails → Slack: thank by phone |
 | close_case | Code | Case → closed | |
 | confirm_slack | Code | "Case 123 marked done, thank-you sent" in the thread | |
 | needs_person | Person alerted | ISSUE: case → needs_person; nothing sent to the customer | |
-| help_reply | Code | Replies with the two accepted formats | |
+| resume | Code | RESUME: needs_person → booked (active booking) or open | Case not in needs_person → reason posted |
+| help_reply | Code | Replies with the three accepted formats | |
 
 Slack requires a 200 response within 3 seconds, so the endpoint acknowledges immediately and runs C in a background task.
 
@@ -618,6 +675,7 @@ Slack requires a 200 response within 3 seconds, so the endpoint acknowledges imm
 | find_tomorrow | Code | Booked visits tomorrow, not reminded, in the business time zone | |
 | send_reminder | Code | Time, address, "reply to change or cancel", by email thread or WhatsApp template | Send fails → Slack: remind by phone |
 | mark_reminded | Code | Never reminds twice | |
+| stale_changes | Code | Bookings tomorrow with a change still pending → Slack "please call" | |
 
 ### Run E: WhatsApp message (phase 2)
 
@@ -645,18 +703,18 @@ Build one working slice at a time; **don't start the next step until its check p
 | 4 | **Chatbot agent in the terminal** | Run A graph, prompts, guard, phone/email validation, refusal rules, a CLI loop | A typed conversation answers questions and books a visit |
 | 5 | **Chat widget + confirmation email** | `POST /chat`; `widget.js` on a demo page; confirmation template sent from the business inbox via the email MCP | A booking on the page produces the email with `[Case #N]` in the subject |
 | 6 | **Slack #bookings** | Slack app; `post_to_slack` for booking/change/cancel/urgent/needs_person | Every booking appears in Slack with its case number |
-| 7 | **Email agent: read + reply** | Polling job, filters, case matching, answering only (no booking) | Replies arrive within 2 minutes; an out-of-office gets none |
-| 8 | **Email agent: booking + changes** | Booking over email; DKIM/DMARC check; change/cancel with the sender checks; the 2-hour rule | The section 6 checks for booking and changes pass |
-| 9 | **Slack status loop + reminders** | Events endpoint, Run C, thank-you template, Run D at 6 PM | `DONE 123` closes the case and the customer gets the thank-you |
+| 7 | **Email agent: read + reply** ✅ built | Polling job (message-ID based, not unread), filters, emergency guard, website form parsing, case matching, answering only (no booking), needs_person with fixed acknowledgement | Replies arrive within 2 minutes; an out-of-office gets none; a form enquiry is answered at the customer's address |
+| 8 | **Email agent: booking + changes** ✅ built | Booking over email; thread + sender check; change/cancel with the sender checks; pending offers; change-confirmation template; Slack old → new; the 2-hour rule | The section 6 checks for booking and changes pass |
+| 9 | **Slack status loop + reminders** | Events endpoint, Run C (DONE / ISSUE / RESUME), thank-you template, Run D at 6 PM with the stale-change alert | `DONE 123` closes the case and the customer gets the thank-you |
 | 10 | **Demo run** | `demo_reset.py`; scripted story: chat booking → email change → DONE → thank-you | Runs twice in a row without touching code |
 | 11 | **WhatsApp (phase 2)** | Meta setup, webhook, adapter, templates, 24-hour logic, media, STOP, language | A real phone books, changes and gets the thank-you |
 
 ### 12.1 Testing strategy (proposed)
 
-- **Unit:** tools, `cases.transition`, filters, case matching, DKIM/DMARC parsing, phone normalisation, the template renderers.
+- **Unit:** tools, `cases.transition`, filters, case matching, form parsing, phone normalisation, the template renderers.
 - **Graph tests:** each run with fake tools and a scripted fake LLM, so tests are deterministic and need no network.
 - **RAG eval:** 30 questions with expected source passages; track hit@4 and "I don't know" accuracy.
-- **Fixtures:** real-shaped sample emails (out-of-office, newsletter, DKIM fail, `[Case #N]` subject), Slack event payloads and WhatsApp webhooks.
+- **Fixtures:** real-shaped sample emails (out-of-office, form email, quoted reply, `[Case #N]` subject), Slack event payloads and WhatsApp webhooks.
 - **Acceptance:** each checklist in sections 5.7, 6.8 and 7 becomes a test or a scripted manual run.
 
 ---
@@ -721,7 +779,7 @@ Added by this plan:
 | Risk | Mitigation |
 |---|---|
 | Free-tier LLM rate limits or slowness | Fallback form, retry on the next tick, Slack alert after 3 failures; keep the model swappable in `llm.py` |
-| Email MCP lacks headers (Authentication-Results, List-Unsubscribe, Auto-Submitted) | Confirm in step 7 that the MCP returns raw headers; if not, extend or replace the MCP |
+| Email MCP lacks headers (Authentication-Results, List-Unsubscribe, Auto-Submitted) | **Confirmed in step 7**: Klavis Gmail returns none. Changes rely on the sender address (6.5), auto-replies on sender/subject, newsletters on Gmail categories. Swap in a header-returning Gmail tool to add DKIM/DMARC |
 | Small models make unreliable tool calls | Tight prompts, few tools per channel, code-side validation, graph tests with recorded transcripts |
 | Meta template approval delays | Submit the three templates as soon as phase 2 starts |
 | Double booking under concurrent requests | Partial unique index on active bookings per slot, plus `SELECT ... FOR UPDATE` on the slot |
