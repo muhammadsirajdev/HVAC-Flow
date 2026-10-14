@@ -1,0 +1,781 @@
+[
+  {
+    "id": "q01",
+    "question": "How much is the AC diagnostic?",
+    "reference_answer": "The residential AC Repair Diagnostic is $99. The fee is waived if you complete the recommended repair with MD Cold Services. Additional charges may apply for after-hours or emergency service.",
+    "must_include": [
+      "$99",
+      "waived"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "03_services/ac-repair.md",
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q02",
+    "question": "whats the regular price of the diagnostic, is 99 a deal?",
+    "reference_answer": "The $99 diagnostic is shown as a Limited-Time Offer; the regular price is shown struck through as $129.",
+    "must_include": [
+      "$99",
+      "$129"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "03_services/ac-repair.md",
+      "10_other.md"
+    ],
+    "multi_chunk": false,
+    "style": "typo"
+  },
+  {
+    "id": "q03",
+    "question": "How much is the Elite plan for two units?",
+    "reference_answer": "$379/year for the first system plus $200/year for the second system at the same location, so $579/year in total.",
+    "must_include": [
+      "$379",
+      "$200",
+      "$579"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q04",
+    "question": "i have 3 ac units in same house how much essential plan",
+    "reference_answer": "Essential Comfort is $179/year for the first system plus $150/year for each additional system at the same location: $179 + $150 + $150 = $479/year.",
+    "must_include": [
+      "$179",
+      "$150",
+      "$479"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "typo"
+  },
+  {
+    "id": "q05",
+    "question": "elite plan ka price kya hai?",
+    "reference_answer": "The Elite Comfort Plan costs $379/year for one residential system.",
+    "must_include": [
+      "$379"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "roman_urdu"
+  },
+  {
+    "id": "q06",
+    "question": "What maintenance plans do you offer?",
+    "reference_answer": "Three plans: Essential Comfort $179/year, Premium Comfort $279/year (most popular) and Elite Comfort $379/year, each covering one residential system.",
+    "must_include": [
+      "$179",
+      "$279",
+      "$379"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q07",
+    "question": "premium plan me kitni visits hain saal mein?",
+    "reference_answer": "Premium Comfort includes 2 preventive maintenance visits per year, one in spring and one in fall.",
+    "must_include": [
+      "2",
+      "spring",
+      "fall"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "roman_urdu"
+  },
+  {
+    "id": "q08",
+    "question": "what discount do elite members get on repairs",
+    "reference_answer": "Elite Comfort members get 15% off qualifying parts and labor repairs.",
+    "must_include": [
+      "15%"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q09",
+    "question": "Essential plan repair discount?",
+    "reference_answer": "Essential Comfort members get 10% off qualifying parts and labor repairs.",
+    "must_include": [
+      "10%"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q10",
+    "question": "does elite plan give any discount on a whole new system",
+    "reference_answer": "Yes. Elite Comfort gives 5% off a qualifying new HVAC system replacement, up to $500.",
+    "must_include": [
+      "5%",
+      "$500"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q11",
+    "question": "Does the Elite plan include filter replacement?",
+    "reference_answer": "Yes, but only standard disposable filters. Specialty, media, electronic, UV and other premium filters are excluded.",
+    "must_include": [
+      "standard disposable"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q12",
+    "question": "does the 15 point inspection check the capacitor",
+    "reference_answer": "Yes. The 15-point inspection includes capacitor condition and performance, along with blower motor, electrical connections, contactor, coils, condensate drain, thermostat, compressor, refrigerant pressures and safety controls.",
+    "must_include": [
+      "capacitor"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q13",
+    "question": "How much is a commercial service call?",
+    "reference_answer": "Commercial service-call and diagnostic charges vary by equipment type and scope, and pricing is confirmed before dispatch.",
+    "must_include": [
+      "before dispatch"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "03_services/commercial-hvac.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q14",
+    "question": "Is the estimate for a new AC free?",
+    "reference_answer": "Yes. MD Cold Services offers free in-home replacement estimates.",
+    "must_include": [
+      "free"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "03_services/ac-installation-replacement.md",
+      "08_booking_and_payment.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q15",
+    "question": "wats ur phone number",
+    "reference_answer": "(786) 797-6193. It is the 24/7 service and emergency line.",
+    "must_include": [
+      "(786) 797-6193"
+    ],
+    "answerable": true,
+    "category": "contact",
+    "expected_sources": [
+      "01_contact_and_locations.md"
+    ],
+    "multi_chunk": false,
+    "style": "typo"
+  },
+  {
+    "id": "q16",
+    "question": "Do you have an email address?",
+    "reference_answer": "Yes: mdcoldservices@gmail.com.",
+    "must_include": [
+      "mdcoldservices@gmail.com"
+    ],
+    "answerable": true,
+    "category": "contact",
+    "expected_sources": [
+      "01_contact_and_locations.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q17",
+    "question": "where are you located",
+    "reference_answer": "The main operations hub is Miami, FL 33176. The website does not list a street address.",
+    "must_include": [
+      "33176"
+    ],
+    "answerable": true,
+    "category": "contact",
+    "expected_sources": [
+      "01_contact_and_locations.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q18",
+    "question": "How do I book an appointment?",
+    "reference_answer": "Book online through the Housecall Pro booking page, or call the 24/7 line at (786) 797-6193. For non-urgent requests you can also use the contact form or email mdcoldservices@gmail.com.",
+    "must_include": [
+      "(786) 797-6193"
+    ],
+    "answerable": true,
+    "category": "booking",
+    "expected_sources": [
+      "08_booking_and_payment.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q19",
+    "question": "Do you service Pembroke Pines?",
+    "reference_answer": "Yes. Pembroke Pines is in Broward County, which MD Cold Services serves.",
+    "must_include": [
+      "Broward"
+    ],
+    "answerable": true,
+    "category": "service_area",
+    "expected_sources": [
+      "01_contact_and_locations.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q20",
+    "question": "Coral Springs mein service dete ho?",
+    "reference_answer": "Yes. Coral Springs is listed in the Broward County service area.",
+    "must_include": [
+      "Broward"
+    ],
+    "answerable": true,
+    "category": "service_area",
+    "expected_sources": [
+      "01_contact_and_locations.md"
+    ],
+    "multi_chunk": false,
+    "style": "roman_urdu"
+  },
+  {
+    "id": "q21",
+    "question": "do u come to islamorada",
+    "reference_answer": "Yes. Islamorada is in the Upper Florida Keys service area.",
+    "must_include": [
+      "Upper Florida Keys"
+    ],
+    "answerable": true,
+    "category": "service_area",
+    "expected_sources": [
+      "01_contact_and_locations.md"
+    ],
+    "multi_chunk": false,
+    "style": "typo"
+  },
+  {
+    "id": "q22",
+    "question": "Is Sunny Isles Beach covered?",
+    "reference_answer": "Yes. Sunny Isles Beach is listed in the Miami-Dade County service area.",
+    "must_include": [
+      "Miami-Dade"
+    ],
+    "answerable": true,
+    "category": "service_area",
+    "expected_sources": [
+      "01_contact_and_locations.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q23",
+    "question": "whats your license number",
+    "reference_answer": "Florida State License #CAC1824837. MD Cold Services is licensed and insured.",
+    "must_include": [
+      "CAC1824837"
+    ],
+    "answerable": true,
+    "category": "trust",
+    "expected_sources": [
+      "00_business_overview.md",
+      "07_policies.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q24",
+    "question": "How long have you been in business?",
+    "reference_answer": "MD Cold Services has 16+ years of professional HVAC experience.",
+    "must_include": [
+      "16"
+    ],
+    "answerable": true,
+    "category": "trust",
+    "expected_sources": [
+      "00_business_overview.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q25",
+    "question": "what's your google rating",
+    "reference_answer": "5.0 out of 5 stars on Google. The website does not state the number of reviews.",
+    "must_include": [
+      "5.0"
+    ],
+    "answerable": true,
+    "category": "trust",
+    "expected_sources": [
+      "09_testimonials_and_trust.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q26",
+    "question": "are your techs background checked?",
+    "reference_answer": "Yes. The website describes them as highly skilled, background-checked professional technicians.",
+    "must_include": [
+      "background-checked"
+    ],
+    "answerable": true,
+    "category": "trust",
+    "expected_sources": [
+      "00_business_overview.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q27",
+    "question": "which brands do you fix",
+    "reference_answer": "Carrier, Rheem, Trane, Goodman, Daikin, Mitsubishi, Lennox and others.",
+    "must_include": [
+      "Carrier",
+      "Trane",
+      "Lennox"
+    ],
+    "answerable": true,
+    "category": "product",
+    "expected_sources": [
+      "04_products/hvac-brands.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q28",
+    "question": "Do you offer financing?",
+    "reference_answer": "Yes, through Synchrony (primary partner), Ygrene (PACE) and Wisetack, subject to approval.",
+    "must_include": [
+      "Synchrony",
+      "Ygrene",
+      "Wisetack"
+    ],
+    "answerable": true,
+    "category": "financing",
+    "expected_sources": [
+      "08_booking_and_payment.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q29",
+    "question": "how long can ygrene financing go",
+    "reference_answer": "Ygrene financing may extend up to 20 years and is repaid through an assessment on the property.",
+    "must_include": [
+      "20 years"
+    ],
+    "answerable": true,
+    "category": "financing",
+    "expected_sources": [
+      "08_booking_and_payment.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q30",
+    "question": "my ac is blowing hot air",
+    "reference_answer": "Warm air from the vents is a common sign your AC needs repair. Book the $99 AC diagnostic (waived if you go ahead with the repair) online, or call the 24/7 line at (786) 797-6193.",
+    "must_include": [
+      "$99",
+      "(786) 797-6193"
+    ],
+    "answerable": true,
+    "category": "troubleshooting",
+    "expected_sources": [
+      "06_faqs.md",
+      "03_services/ac-repair.md"
+    ],
+    "multi_chunk": true,
+    "style": "symptom"
+  },
+  {
+    "id": "q31",
+    "question": "can u put a mini split in my garage",
+    "reference_answer": "Yes. Mini-splits are commonly used in garages, additions, converted spaces, individual rooms and offices.",
+    "must_include": [
+      "garage"
+    ],
+    "answerable": true,
+    "category": "service",
+    "expected_sources": [
+      "03_services/mini-split-systems.md",
+      "06_faqs.md"
+    ],
+    "multi_chunk": false,
+    "style": "typo"
+  },
+  {
+    "id": "q32",
+    "question": "difference between single zone and multi zone mini split?",
+    "reference_answer": "A single-zone system serves one area with one indoor unit. A multi-zone system connects multiple indoor units to control temperature in several areas.",
+    "must_include": [
+      "one indoor unit",
+      "multiple indoor units"
+    ],
+    "answerable": true,
+    "category": "service",
+    "expected_sources": [
+      "06_faqs.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q33",
+    "question": "Do you work on Daikin VRF systems?",
+    "reference_answer": "Yes. MD Cold Services lists Daikin & Mitsubishi VRF/VRV systems for installation, diagnostics, repair and maintenance.",
+    "must_include": [
+      "Daikin",
+      "Mitsubishi"
+    ],
+    "answerable": true,
+    "category": "service",
+    "expected_sources": [
+      "03_services/commercial-hvac.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q34",
+    "question": "I own a restaurant, can you service our rooftop unit?",
+    "reference_answer": "Yes. MD Cold Services services rooftop units (RTUs) for restaurants: diagnostics, repair and economizer service, full replacement with crane lifting coordination, and preventive maintenance agreements.",
+    "must_include": [
+      "RTU"
+    ],
+    "answerable": true,
+    "category": "service",
+    "expected_sources": [
+      "03_services/commercial-hvac.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q35",
+    "question": "how do i know my ducts are leaking",
+    "reference_answer": "Common signs are weak airflow, uneven room temperatures, excess dust, visible duct damage, unusually high energy bills and difficulty keeping the property comfortable.",
+    "must_include": [
+      "weak airflow",
+      "uneven"
+    ],
+    "answerable": true,
+    "category": "faq",
+    "expected_sources": [
+      "06_faqs.md"
+    ],
+    "multi_chunk": false,
+    "style": "symptom"
+  },
+  {
+    "id": "q36",
+    "question": "Is a heat pump a good idea in South Florida?",
+    "reference_answer": "Yes. Heat pumps provide efficient cooling and also provide heating during cooler periods.",
+    "must_include": [
+      "heating"
+    ],
+    "answerable": true,
+    "category": "faq",
+    "expected_sources": [
+      "06_faqs.md",
+      "03_services/heat-pump-services.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q37",
+    "question": "are you open on sunday and does it cost extra?",
+    "reference_answer": "Emergency HVAC service is available 24/7 at (786) 797-6193. Regular business hours are not stated on the website. After-hours and weekend service is subject to after-hours or weekend pricing; the amount is not stated.",
+    "must_include": [
+      "24/7",
+      "(786) 797-6193"
+    ],
+    "answerable": true,
+    "category": "hours",
+    "expected_sources": [
+      "02_hours.md",
+      "05_pricing.md"
+    ],
+    "multi_chunk": true,
+    "style": "plain"
+  },
+  {
+    "id": "q38",
+    "question": "Im an elite member, my ac died at 9pm. do i still pay for diagnostic?",
+    "reference_answer": "The Elite $0 diagnostic applies only during regular business hours to covered systems. After-hours service is subject to after-hours pricing. The website does not state the regular hours or the after-hours amount, so call (786) 797-6193 to confirm.",
+    "must_include": [
+      "regular business hours",
+      "(786) 797-6193"
+    ],
+    "answerable": true,
+    "category": "pricing",
+    "expected_sources": [
+      "05_pricing.md",
+      "02_hours.md"
+    ],
+    "multi_chunk": true,
+    "style": "typo"
+  },
+  {
+    "id": "q39",
+    "question": "ac pani tapka raha hai, raat ko emergency service milegi?",
+    "reference_answer": "Yes. MD Cold Services offers 24/7 emergency service at (786) 797-6193. Water leaks are a common sign the AC needs repair. Additional charges may apply for after-hours or emergency service.",
+    "must_include": [
+      "24/7",
+      "(786) 797-6193"
+    ],
+    "answerable": true,
+    "category": "emergency",
+    "expected_sources": [
+      "02_hours.md",
+      "06_faqs.md",
+      "03_services/ac-repair.md"
+    ],
+    "multi_chunk": true,
+    "style": "roman_urdu"
+  },
+  {
+    "id": "q40",
+    "question": "i want a new ac in key largo can i pay monthly",
+    "reference_answer": "Yes. Key Largo is in the Upper Florida Keys service area. Replacement estimates are free, and financing is available through Synchrony, Ygrene and Wisetack, subject to approval.",
+    "must_include": [
+      "free",
+      "Synchrony"
+    ],
+    "answerable": true,
+    "category": "financing",
+    "expected_sources": [
+      "01_contact_and_locations.md",
+      "03_services/ac-installation-replacement.md",
+      "08_booking_and_payment.md"
+    ],
+    "multi_chunk": true,
+    "style": "typo"
+  },
+  {
+    "id": "q41",
+    "question": "Do you repair gas furnaces?",
+    "reference_answer": "I'm not sure: the website does not mention gas furnace service. Please call (786) 797-6193 to ask.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "10_other.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q42",
+    "question": "What's the APR on Synchrony financing?",
+    "reference_answer": "I'm not sure: the website does not state APR, interest rates or loan terms. Apply via Synchrony or call (786) 797-6193.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "08_booking_and_payment.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q43",
+    "question": "how much does a new 3 ton ac cost installed",
+    "reference_answer": "I'm not sure: installation prices are not listed. MD Cold Services offers a free in-home replacement estimate.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "05_pricing.md"
+    ],
+    "multi_chunk": false,
+    "style": "typo"
+  },
+  {
+    "id": "q44",
+    "question": "What is your cancellation policy?",
+    "reference_answer": "I'm not sure: the website does not state a cancellation or rescheduling policy. Please call (786) 797-6193.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "07_policies.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q45",
+    "question": "do you take zelle or credit card",
+    "reference_answer": "I'm not sure: accepted payment methods are not listed on the website. Please call (786) 797-6193.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "08_booking_and_payment.md"
+    ],
+    "multi_chunk": false,
+    "style": "typo"
+  },
+  {
+    "id": "q46",
+    "question": "Do you service Boca Raton?",
+    "reference_answer": "I'm not sure: Boca Raton is not in the listed service areas. Call (786) 797-6193 to confirm coverage.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "01_contact_and_locations.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q47",
+    "question": "how long is the warranty on your labor",
+    "reference_answer": "I'm not sure: the website only mentions manufacturer warranty coverage on select systems; no labor warranty length is stated.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "07_policies.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q48",
+    "question": "exactly how much is the after hours fee?",
+    "reference_answer": "I'm not sure: the website says after-hours or emergency charges may apply but does not state the amount.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "02_hours.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q49",
+    "question": "who owns MD Cold?",
+    "reference_answer": "I'm not sure: the website does not name the owner or team members.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "00_business_overview.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  },
+  {
+    "id": "q50",
+    "question": "water heater install bhi karte ho?",
+    "reference_answer": "I'm not sure: the website does not mention water heater installation. Please call (786) 797-6193 to ask.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "10_other.md"
+    ],
+    "multi_chunk": false,
+    "style": "roman_urdu"
+  },
+  {
+    "id": "q51",
+    "question": "when does the $99 diagnostic deal end?",
+    "reference_answer": "I'm not sure: the $99 price is labelled a Limited-Time Offer but no end date is stated.",
+    "must_include": [],
+    "answerable": false,
+    "category": "abstain",
+    "expected_sources": [
+      "10_other.md"
+    ],
+    "multi_chunk": false,
+    "style": "plain"
+  }
+]

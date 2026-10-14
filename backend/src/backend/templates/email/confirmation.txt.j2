@@ -1,0 +1,16 @@
+Hi {{ name }},
+
+{% if updated %}Your visit with {{ business_name }} has been updated.{% else %}Your visit with {{ business_name }} is booked.{% endif %}
+
+Case number: #{{ case_id }}
+Service:     {{ service }}
+Time:        {{ slot_label }}{% if updated and previous_slot_label and previous_slot_label != slot_label %}  (was {{ previous_slot_label }}){% endif %}
+Address:     {{ address }}
+Problem:     {{ problem }}
+Phone:       {{ phone }}
+
+To change or cancel, just reply to this email and keep [Case #{{ case_id }}] in the subject.
+For anything urgent, call our 24/7 line at {{ business_phone }}.
+
+Thank you,
+{{ business_name }}

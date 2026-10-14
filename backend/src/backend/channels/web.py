@@ -1,0 +1,1 @@
+"""Website chat adapter."""

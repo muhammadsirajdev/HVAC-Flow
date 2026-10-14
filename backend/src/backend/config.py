@@ -1,0 +1,76 @@
+"""Settings loaded from .env (pydantic-settings)."""
+
+from functools import lru_cache
+from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# backend/  (the uv project root: holds .env, knowledge/, data/)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=PROJECT_ROOT / ".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    # --- Business ---
+    business_name: str = "MD Cold Services"
+    business_phone: str = "(786) 797-6193"
+    business_tz: str = "America/New_York"       # Miami
+    business_inbox: str = "mdcoldservices@gmail.com"
+
+    # --- Database (app data + LangGraph checkpoints) ---
+    database_url: str = ""
+
+    # --- Chat LLM (classifier + answers). provider: openai | groq ---
+    llm_provider: str = "openai"
+    llm_model: str = "gpt-4.1-mini"
+    llm_timeout: float = 30.0
+    groq_api_key: str = ""
+
+    # --- OpenAI ---
+    openai_api_key: str = ""
+
+    # --- MCP: Gmail and Slack through Klavis ---
+    klavis_gmail_mcp_url: str = ""
+    klavis_slack_mcp_url: str = ""
+    klavis_mcp_token: str = ""
+    gmail_send_tool: str = "gmail_send_email"
+    slack_post_tool: str = "slack_user_post_message"
+    slack_list_channels_tool: str = "slack_user_list_channels"
+    mcp_timeout: float = 30.0
+
+    # --- Slack channels: a channel NAME (looked up with slack_user_list_channels) or an ID ---
+    slack_urgent_channel: str = "slack_urgent_channel"
+    slack_bookings_channel: str = ""          # empty -> everything goes to the urgent channel
+
+    # --- Chat booking flow ---
+    slot_offer_count: int = 3
+    min_lead_hours: int = 2                   # earliest slot offered: now + this
+    late_change_hours: int = 2                # changes closer than this to the visit -> a person
+    chat_amend_minutes: int = 60              # a booking can be changed in the SAME chat for this long
+    widget_allowed_origins: str = "http://localhost:8000"
+    dev_ui: bool = True                       # test console at / and /dev/*; set False in production
+
+    # --- RAG ---
+    # The same embedding model MUST be used for ingestion and retrieval.
+    rag_embedding_model: str = "text-embedding-3-large"
+    rag_chunker_model: str = "gpt-4.1"
+    rag_report_model: str = "gpt-4.1"
+    kb_dir: Path = PROJECT_ROOT / "knowledge" / "mdcold"
+    kb_build_dir: Path = PROJECT_ROOT / "knowledge" / "mdcold" / "build"
+    chroma_dir: Path = PROJECT_ROOT / "data" / "chroma"
+    chroma_collection: str = "mdcold_kb"
+    kb_top_k: int = 6
+    kb_max_per_source: int = 2                # at most this many chunks from one source file
+    # Cosine similarity (1 - distance). text-embedding-3-large scores relevant
+    # passages lower than older models; tune with `python -m backend.rag.evaluate`.
+    kb_min_score: float = 0.20                # only blocks off-topic (<0.19); see eval_qa_report.md
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()

@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run A Test Console</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #1d2330; --muted: #6b7385; --line: #e3e6ec;
+    --accent: #2563eb; --accent-soft: #e8efff; --ok: #15803d; --ok-soft: #e7f6ec;
+    --bad: #b91c1c; --bad-soft: #fdecec; --warn: #a16207; --warn-soft: #fdf6e3;
+    --bot: #f1f3f7; --user: #2563eb; --user-ink: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11141a; --panel: #181c24; --ink: #e6e9ef; --muted: #8b93a6; --line: #2a303c;
+      --accent: #6b9bff; --accent-soft: #1f2a44; --ok: #4ade80; --ok-soft: #14301f;
+      --bad: #f87171; --bad-soft: #3a1a1a; --warn: #facc15; --warn-soft: #352d10;
+      --bot: #222834; --user: #3b6fe0; --user-ink: #fff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+           padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  header h1 { font-size: 16px; margin: 0 8px 0 0; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { font-size: 12px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line);
+          color: var(--muted); cursor: help; white-space: nowrap; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+  main { display: grid; grid-template-columns: minmax(320px, 440px) 1fr; gap: 16px; padding: 16px;
+         height: calc(100vh - 58px); }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; height: auto; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+          display: flex; flex-direction: column; min-height: 0; }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+             margin: 0; padding: 10px 14px; border-bottom: 1px solid var(--line);
+             display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  /* chat */
+  #log { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+         min-height: 300px; }
+  .msg { max-width: 88%; padding: 8px 12px; border-radius: 12px; white-space: pre-wrap; word-wrap: break-word; }
+  .msg.bot { background: var(--bot); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg.user { background: var(--user); color: var(--user-ink); align-self: flex-end; border-bottom-right-radius: 4px; }
+  .msg.sys { align-self: center; font-size: 12px; color: var(--muted); background: none; padding: 0; }
+  .msg .meta { display: block; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .msg.emergency { background: var(--bad-soft); color: var(--bad); }
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 14px; border-top: 1px solid var(--line); }
+  .quick button { font-size: 12px; }
+  form.send { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--line); }
+  input, textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+                    border-radius: 8px; padding: 8px 10px; width: 100%; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+           border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: wait; }
+  #fallback { display: none; padding: 10px 14px; border-top: 1px solid var(--line); background: var(--warn-soft); }
+  #fallback .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
+  /* right side */
+  .right { display: grid; grid-template-rows: auto auto 1fr; gap: 16px; min-height: 0; overflow-y: auto; }
+  .body { padding: 12px 14px; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .node { font: 12px ui-monospace, SFMono-Regular, Consolas, monospace; padding: 4px 8px;
+          border-radius: 6px; border: 1px solid var(--line); color: var(--muted); }
+  .node.hit { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+  .arrow { color: var(--muted); font-size: 12px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 1200px) { .row { grid-template-columns: 1fr; } }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0; }
+  dt { color: var(--muted); }
+  dd { margin: 0; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; word-break: break-word; }
+  .tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 6px; margin: 2px 4px 2px 0; }
+  .tag.ok { background: var(--ok-soft); color: var(--ok); }
+  .tag.bad { background: var(--bad-soft); color: var(--bad); }
+  .tag.wait { background: var(--warn-soft); color: var(--warn); }
+  .tag.none { background: var(--bot); color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  .status { font-weight: 600; }
+  .status.booked { color: var(--accent); } .status.needs_person { color: var(--warn); }
+  .status.closed, .status.done { color: var(--ok); } .status.cancelled { color: var(--bad); }
+  .scroll { overflow-x: auto; }
+  .muted { color: var(--muted); }
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; margin-top: 10px; }
+  pre { font-size: 12px; background: var(--bg); padding: 8px; border-radius: 6px; overflow-x: auto; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Run A · Website Chat Test Console</h1>
+  <div class="pills" id="pills"><span class="pill">checking services…</span></div>
+</header>
+
+<main>
+  <!-- CHAT -->
+  <section class="card">
+    <h2><span>Chat <span class="muted" id="sid"></span></span>
+        <button id="newSession" title="Start a fresh conversation (new LangGraph thread)">New session</button></h2>
+    <div id="log"></div>
+    <div id="fallback">
+      <strong>Fallback form</strong> <span class="muted">(shown when the AI is unavailable)</span>
+      <div class="grid">
+        <input id="fbName" placeholder="Name"><input id="fbPhone" placeholder="Phone">
+        <input id="fbEmail" placeholder="Email"><input id="fbProblem" placeholder="Problem">
+      </div>
+      <button class="primary" id="fbSend">Send to the office</button>
+    </div>
+    <div class="quick" id="quick"></div>
+    <form class="send" id="sendForm">
+      <input id="text" autocomplete="off" placeholder="Type as a customer…" maxlength="2000">
+      <button class="primary" id="sendBtn">Send</button>
+    </form>
+  </section>
+
+  <!-- WORKFLOW + DB -->
+  <section class="right">
+    <div class="card">
+      <h2><span>This turn: workflow</span><span class="muted" id="took"></span></h2>
+      <div class="body">
+        <div class="flow" id="flow"></div>
+        <p class="muted" id="flowNote" style="margin:8px 0 0">Send a message to see which nodes run.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card">
+        <h2>Classifier &amp; booking state</h2>
+        <div class="body">
+          <dl id="stateList"><dt>—</dt><dd class="muted">no turn yet</dd></dl>
+          <details><summary>raw state snapshot</summary><pre id="raw">{}</pre></details>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Actions &amp; notifications</h2>
+        <div class="body" id="actions"><span class="muted">Booking, email and Slack results appear here.</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span>Database</span><button id="refreshDb">Refresh</button></h2>
+      <div class="body">
+        <div id="counts" class="muted"></div>
+        <h3 style="font-size:13px;margin:12px 0 4px">Recent cases</h3>
+        <div class="scroll"><table id="cases"></table></div>
+        <div class="row" style="margin-top:12px">
+          <div><h3 style="font-size:13px;margin:0 0 4px">Case events (status changes)</h3>
+               <div class="scroll"><table id="events"></table></div></div>
+          <div><h3 style="font-size:13px;margin:0 0 4px">Next open slots</h3>
+               <div class="scroll"><table id="slots"></table></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const NODES = ["guard", "classify", "rag_answer", "booking_step", "create_booking", "notify",
+               "fixed_reply", "smalltalk", "fallback_form", "respond"];
+const QUICK = [
+  ["Hours?", "What are your hours?"],
+  ["Diagnostic price", "How much is an AC diagnostic?"],
+  ["Plans", "What maintenance plans do you have?"],
+  ["Service area", "Do you serve Coral Springs?"],
+  ["Unknown", "Do you repair swimming pool heaters?"],
+  ["Book", "My AC is blowing warm air, I need someone to come out"],
+  ["Move visit", "Can I move my visit to Friday?"],
+  ["Emergency", "I smell gas near the furnace"],
+  ["Card", "Here is my card number 4111 1111 1111 1111"],
+  ["Off-topic", "Who won the World Cup?"],
+];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function newSessionId() { return "test-" + Math.random().toString(36).slice(2, 12) + Date.now().toString(36); }
+let session;
+try { session = sessionStorage.getItem("runA.session") || newSessionId(); sessionStorage.setItem("runA.session", session); }
+catch { session = newSessionId(); }
+$("sid").textContent = "· " + session;
+
+function add(kind, text, meta) {
+  const div = document.createElement("div");
+  div.className = "msg " + kind;
+  div.textContent = text;
+  if (meta) { const m = document.createElement("span"); m.className = "meta"; m.textContent = meta; div.appendChild(m); }
+  $("log").appendChild(div);
+  $("log").scrollTop = $("log").scrollHeight;
+  return div;
+}
+
+function renderFlow(trace) {
+  const flow = $("flow");
+  flow.innerHTML = "";
+  if (!trace || !trace.length) { NODES.forEach((n) => flow.insertAdjacentHTML("beforeend", `<span class="node">${n}</span>`)); return; }
+  trace.forEach((n, i) => {
+    if (i) flow.insertAdjacentHTML("beforeend", `<span class="arrow">→</span>`);
+    flow.insertAdjacentHTML("beforeend", `<span class="node hit">${esc(n)}</span>`);
+  });
+  const skipped = NODES.filter((n) => !trace.includes(n));
+  $("flowNote").innerHTML = `Path this turn (${trace.length} nodes). Not used: ` +
+    skipped.map((n) => `<span class="node">${n}</span>`).join(" ");
+}
+
+function renderState(res) {
+  const d = res.debug || {}, a = d.analysis || {}, b = d.booking || {};
+  const rows = [
+    ["intent", res.intent || a.intent || "—"],
+    ["search_query", a.search_query],
+    ["extracted", ["name","phone","email","address","problem","service","preferred_date","part_of_day"]
+                    .filter((k) => a[k]).map((k) => `${k}=${a[k]}`).join(", ")],
+    ["slot_choice", a.slot_choice], ["confirmation", a.confirmation !== "none" ? a.confirmation : null],
+    ["changed", (a.changed || []).join(", ")],
+    ["invalid", (d.invalid_fields || []).join(", ")],
+    ["draft", Object.entries(b).map(([k, v]) => `${k}=${v}`).join("\n")],
+    ["offered", (d.offered_slots || []).map((s, i) => `${i + 1}. ${s.label} (#${s.slot_id})`).join("\n")],
+    ["chosen", d.chosen_slot ? `${d.chosen_slot.label} (#${d.chosen_slot.slot_id})` : null],
+    ["awaiting yes/no", d.awaiting_confirmation ? "yes" : null],
+    ["case", d.case_id ? `#${d.case_id}` : null],
+  ].filter(([, v]) => v !== null && v !== undefined && v !== "");
+  $("stateList").innerHTML = rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd style="white-space:pre-wrap">${esc(v)}</dd>`).join("");
+  $("raw").textContent = JSON.stringify(d, null, 2);
+}
+
+function tag(state, label) { return `<span class="tag ${state}">${esc(label)}</span>`; }
+
+function renderActions(res) {
+  const d = res.debug || {}, lb = d.last_booking, trace = res.trace || [];
+  const parts = [];
+  if (res.emergency) parts.push(tag("bad", "Emergency: safety message shown") + tag(trace.length ? "ok" : "none", "urgent Slack alert sent"));
+  if (res.fallback_form) parts.push(tag("wait", "Fallback form shown (AI unavailable)"));
+  if (trace.includes("create_booking") && !res.booked) parts.push(tag("wait", "Booking not completed: see reply"));
+  if (lb) {
+    const r = lb.request || {};
+    parts.push(`<dl>
+      <dt>booking</dt><dd>${tag("ok", "saved")} #${esc(lb.booking_id)} · Case #${esc(lb.case_id)}</dd>
+      <dt>time</dt><dd>${esc(lb.slot_label)}</dd>
+      <dt>service</dt><dd>${esc(r.service)}</dd>
+      <dt>customer</dt><dd>${esc(r.name)} · ${esc(r.phone)} · ${esc(r.email)}</dd>
+      <dt>Gmail</dt><dd>${lb.email_sent === undefined ? tag("none", "not yet") : lb.email_sent ? tag("ok", "confirmation sent to " + r.email) : tag("bad", "failed: Slack asked to confirm by phone")}</dd>
+      <dt>Slack</dt><dd>${lb.slack_posted === undefined ? tag("none", "not yet") : lb.slack_posted ? tag("ok", "posted to bookings channel") : tag("bad", "not posted (check channel / logs)")}</dd>
+    </dl>`);
+  }
+  if (d.case_id && !lb && !res.booked) parts.push(`${tag("wait", "Case #" + d.case_id + " opened")} needs a person (Slack notified)`);
+  $("actions").innerHTML = parts.join("<br>") || `<span class="muted">No actions this conversation yet.</span>`;
+}
+
+async function refreshDb() {
+  try {
+    const r = await fetch("/dev/overview"); if (!r.ok) throw new Error(r.status);
+    const o = await r.json();
+    $("counts").textContent = `${o.counts.cases} cases · ${o.counts.active_bookings} active bookings · ${o.counts.open_slots} open future slots`;
+    $("cases").innerHTML = "<tr><th>Case</th><th>Status</th><th>Customer</th><th>Service / time</th><th>Address</th><th>Email / Slack</th><th>Note</th></tr>" +
+      (o.cases.map((c) => `<tr><td>#${c.case_id}</td><td class="status ${esc(c.status)}">${esc(c.status)}</td>
+        <td>${esc(c.name)}<br><span class="muted">${esc(c.email)} · ${esc(c.phone)}</span></td>
+        <td>${esc(c.service || "—")}<br><span class="muted">${esc(c.slot || "")}</span></td>
+        <td>${esc(c.address || "")}</td>
+        <td>${c.booking_id ? (c.email_sent ? tag("ok", "email ✓") : tag("bad", "email not sent")) + (c.slack_posted ? tag("ok", "slack ✓") : tag("bad", "slack not sent")) : ""}</td>
+        <td class="muted">${esc(c.note || "")}</td></tr>`).join("") ||
+       `<tr><td colspan="7" class="muted">No cases yet.</td></tr>`);
+    $("events").innerHTML = "<tr><th>Case</th><th>Change</th><th>Reason</th></tr>" +
+      (o.events.map((e) => `<tr><td>#${e.case_id}</td><td>${esc(e.from_status || "∅")} → <b>${esc(e.to_status)}</b></td><td class="muted">${esc(e.reason)}</td></tr>`).join("") ||
+       `<tr><td colspan="3" class="muted">None.</td></tr>`);
+    $("slots").innerHTML = "<tr><th>#</th><th>Starts</th></tr>" +
+      (o.next_slots.map((s) => `<tr><td>${s.slot_id}</td><td>${esc(s.label)}</td></tr>`).join("") ||
+       `<tr><td colspan="2" class="muted">No open slots: run scripts/seed_demo_client.py</td></tr>`);
+  } catch (e) { $("counts").textContent = "Database unavailable: " + e.message; }
+}
+
+async function refreshStatus() {
+  try {
+    const st = await (await fetch("/dev/status")).json();
+    const names = { llm: "LLM", knowledge_base: "Knowledge base", database: "Database", mcp_tools: "MCP tools", slack_channel: "Slack" };
+    $("pills").innerHTML = Object.entries(st).map(([k, v]) =>
+      `<span class="pill ${v.ok ? "ok" : "bad"}" title="${esc(v.detail)}">${v.ok ? "●" : "○"} ${names[k] || k}</span>`).join("");
+  } catch { $("pills").innerHTML = `<span class="pill bad">status unavailable</span>`; }
+}
+
+async function send(text) {
+  text = text.trim(); if (!text) return;
+  add("user", text);
+  $("text").value = ""; $("sendBtn").disabled = true;
+  const thinking = add("sys", "…thinking");
+  const t0 = performance.now();
+  try {
+    const r = await fetch("/chat?debug=true", { method: "POST", headers: { "Content-Type": "application/json" },
+                                              body: JSON.stringify({ session_id: session, text }) });
+    const res = await r.json();
+    thinking.remove();
+    if (!r.ok) { add("sys", "Error " + r.status + ": " + JSON.stringify(res.detail || res)); return; }
+    const secs = ((performance.now() - t0) / 1000).toFixed(1);
+    const m = add("bot", res.reply, `intent: ${res.intent || "—"}${res.case_id ? " · Case #" + res.case_id : ""}`);
+    if (res.emergency) m.classList.add("emergency");
+    $("took").textContent = secs + " s";
+    $("fallback").style.display = res.fallback_form ? "block" : "none";
+    renderFlow(res.trace); renderState(res); renderActions(res);
+    refreshDb();
+  } catch (e) { thinking.remove(); add("sys", "Request failed: " + e.message); }
+  finally { $("sendBtn").disabled = false; $("text").focus(); }
+}
+
+$("sendForm").addEventListener("submit", (e) => { e.preventDefault(); send($("text").value); });
+QUICK.forEach(([label, text]) => {
+  const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.title = text;
+  b.onclick = () => send(text); $("quick").appendChild(b);
+});
+$("newSession").onclick = () => {
+  session = newSessionId(); try { sessionStorage.setItem("runA.session", session); } catch {}
+  $("sid").textContent = "· " + session; $("log").innerHTML = ""; $("fallback").style.display = "none";
+  renderFlow([]); $("flowNote").textContent = "Send a message to see which nodes run.";
+  $("stateList").innerHTML = '<dt>—</dt><dd class="muted">no turn yet</dd>'; $("raw").textContent = "{}";
+  $("actions").innerHTML = '<span class="muted">Booking, email and Slack results appear here.</span>';
+  add("sys", "New session started");
+};
+$("fbSend").onclick = async () => {
+  const body = { session_id: session, name: $("fbName").value.trim(), phone: $("fbPhone").value.trim(),
+                 email: $("fbEmail").value.trim(), problem: $("fbProblem").value.trim() };
+  if (!body.name || !body.phone || !body.email || !body.problem) {
+    add("sys", "Please fill in name, phone, email and problem."); return;
+  }
+  const r = await fetch("/chat/fallback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const res = await r.json();
+  add(r.ok ? "bot" : "sys", r.ok ? res.message : "Form error: " + JSON.stringify(res.detail));
+  if (r.ok) { $("fallback").style.display = "none"; refreshDb(); }
+};
+$("refreshDb").onclick = refreshDb;
+
+renderFlow([]);
+add("sys", "Test as a customer. Real bookings send a real email to the address you type and post to Slack.");
+refreshStatus(); refreshDb();
+</script>
+</body>
+</html>
