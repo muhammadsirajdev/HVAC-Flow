@@ -39,9 +39,25 @@ class Settings(BaseSettings):
     klavis_slack_mcp_url: str = ""
     klavis_mcp_token: str = ""
     gmail_send_tool: str = "gmail_send_email"
+    gmail_search_tool: str = "gmail_search_emails"
+    gmail_read_tool: str = "gmail_read_email"
+    gmail_modify_tool: str = "gmail_modify_email"
     slack_post_tool: str = "slack_user_post_message"
     slack_list_channels_tool: str = "slack_user_list_channels"
     mcp_timeout: float = 30.0
+
+    # --- Email agent (Run B) ---
+    email_poll_enabled: bool = False          # start the inbox poller with the app
+    email_poll_seconds: int = 90
+    # Gmail search for candidate emails. Handled ones are skipped by message ID (messages table).
+    email_poll_query: str = ("in:inbox -from:me newer_than:3d -category:promotions -category:social "
+                             "-category:updates -category:forums")
+    email_poll_max: int = 25
+    # New conversations are only taken from mail sent TO this address (or a website form sender);
+    # replies in a case's thread are always taken. Everything else in the mailbox is ignored.
+    email_agent_address: str = ""             # e.g. you+hvac@gmail.com; empty -> business_inbox
+    email_form_senders: str = ""              # comma-separated website enquiry-form sender addresses
+    max_ai_replies_per_thread_per_hour: int = 5
 
     # --- Slack channels: a channel NAME (looked up with slack_user_list_channels) or an ID ---
     slack_urgent_channel: str = "slack_urgent_channel"
@@ -67,7 +83,7 @@ class Settings(BaseSettings):
     kb_top_k: int = 6
     kb_max_per_source: int = 2                # at most this many chunks from one source file
     # Cosine similarity (1 - distance). text-embedding-3-large scores relevant
-    # passages lower than older models; tune with `python -m backend.rag.evaluate`.
+    # passages lower than older models; tune with `python -m backend.rag.evaluate_qa`.
     kb_min_score: float = 0.20                # only blocks off-topic (<0.19); see eval_qa_report.md
 
 

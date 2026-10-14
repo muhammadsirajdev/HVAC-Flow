@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "airportsdata==20260315",
+    "apscheduler==3.11.3",
     "chromadb==1.5.9",
     "fastapi==0.136.3",
     "jinja2==3.1.6",
@@ -33,9 +34,6 @@ dependencies = [
     "tiktoken==0.14.0",
     "uvicorn==0.48.0",
 ]
-
-[project.scripts]
-backend = "backend:main"
 
 [build-system]
 requires = ["uv_build>=0.12.15,<0.13.0"]

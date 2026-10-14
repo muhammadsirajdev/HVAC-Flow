@@ -23,6 +23,7 @@ class TurnAnalysis(BaseModel):
     service: str | None = Field(description="One of the listed services, or null")
     preferred_date: str | None = Field(description="YYYY-MM-DD")
     part_of_day: Literal["morning", "afternoon", "evening", "any"] | None
+    preferred_time: str | None = Field(default=None, description="HH:MM, 24-hour")
     slot_choice: int | None = Field(description="1-based number of an offered time")
     wants_other_times: bool
     wants_cancel: bool

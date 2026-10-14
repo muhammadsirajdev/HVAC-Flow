@@ -1,4 +1,4 @@
-"""get_open_slots, create_booking, change_booking (cancel_booking comes with Run B).
+"""get_open_slots, create_booking, change_booking, cancel_booking.
 
 create_booking is the only way a case becomes 'booked'. It runs in one transaction
 and locks the slot, so the same slot can never be booked twice.
@@ -86,6 +86,20 @@ def get_open_slots(preferred_date: str | None = None, part_of_day: str | None = 
     return [SlotOption(r["slot_id"], r["starts_at"], format_slot(r["starts_at"])) for r in rows]
 
 
+def find_slot(day: str, hhmm: str) -> SlotOption | None:
+    """The free slot starting exactly at `day` (YYYY-MM-DD) `hhmm` (HH:MM, business time zone)."""
+    try:
+        starts = datetime.combine(date.fromisoformat(day), time.fromisoformat(hhmm), tzinfo=business_tz())
+    except ValueError:
+        return None
+    if starts < now() + timedelta(hours=get_settings().min_lead_hours):
+        return None
+    with get_pool().connection() as conn:
+        row = conn.execute("SELECT slot_id, starts_at FROM slots WHERE starts_at = %s AND NOT taken",
+                           (starts,)).fetchone()
+    return SlotOption(row["slot_id"], row["starts_at"], format_slot(row["starts_at"])) if row else None
+
+
 def create_booking(req: BookingRequest) -> BookingResult:
     """Save customer, case and booking atomically; set the case to booked.
 
@@ -148,7 +162,7 @@ def change_booking(booking_id: int, req: BookingRequest) -> BookingResult:
         # A change needs a new (updated) confirmation and Slack post.
         conn.execute(
             "UPDATE bookings SET slot_id = %s, service = %s, address = %s, problem = %s, reminded = false, "
-            "confirmation_sent_at = NULL, slack_posted_at = NULL "
+            "confirmation_sent_at = NULL, slack_posted_at = NULL, pending_slot_ids = NULL, pending_since = NULL "
             "WHERE booking_id = %s", (req.slot_id, req.service, req.address, req.problem, booking_id))
         cust = conn.execute(
             "SELECT cu.name, cu.phone, lower(cu.email) AS email, cu.created_at >= c.created_at - interval '5 minutes' AS is_new "
@@ -172,6 +186,39 @@ def change_booking(booking_id: int, req: BookingRequest) -> BookingResult:
         updated=True, previous_slot_label=format_slot(old["starts_at"]),
     )
 
+
+
+def cancel_booking(case_id: int, reason: str) -> BookingResult:
+    """Cancel the active booking on a booked case: frees the slot, case -> cancelled.
+
+    Callers decide who may cancel (email: verified sender only). Raises LateChange when the
+    visit is too close or there is nothing to cancel: a person handles those.
+    """
+    stored = load_booking(case_id)
+    if stored is None:
+        raise LateChange(f"case {case_id} has no active booking")
+    with get_pool().connection() as conn:
+        row = conn.execute(
+            "SELECT b.slot_id, s.starts_at FROM bookings b JOIN slots s USING (slot_id) "
+            "WHERE b.booking_id = %s AND b.active FOR UPDATE OF b", (stored.result.booking_id,)).fetchone()
+        if row is None:
+            raise LateChange(f"case {case_id} has no active booking")
+        if row["starts_at"] - now() < timedelta(hours=get_settings().late_change_hours):
+            raise LateChange(f"visit for case {case_id} is within {get_settings().late_change_hours} hours")
+        conn.execute("UPDATE bookings SET active = false, pending_slot_ids = NULL, pending_since = NULL "
+                     "WHERE booking_id = %s", (stored.result.booking_id,))
+        conn.execute("UPDATE slots SET taken = false WHERE slot_id = %s", (row["slot_id"],))
+        cases.transition(conn, case_id, "cancelled", reason)
+    return stored.result
+
+
+def set_pending_change(booking_id: int, slot_ids: list[int]) -> None:
+    """Record the times offered for a change (not held); an empty list clears it."""
+    with get_pool().connection() as conn:
+        conn.execute("UPDATE bookings SET pending_slot_ids = %(ids)s, "
+                     "pending_since = CASE WHEN %(ids)s::bigint[] IS NULL THEN NULL "
+                     "ELSE COALESCE(pending_since, now()) END WHERE booking_id = %(id)s",
+                     {"ids": slot_ids or None, "id": booking_id})
 
 @dataclass
 class StoredBooking:
@@ -233,3 +280,11 @@ def create_needs_person_case(name: str | None, phone: str | None, email: str | N
         if case["status"] != "needs_person":
             cases.transition(conn, case["case_id"], "needs_person", note)
         return case["case_id"]
+
+
+def to_needs_person(case_id: int, reason: str) -> None:
+    """Hand an existing case to the office: the AI stops replying on it."""
+    with get_pool().connection() as conn:
+        case = cases.get_case(conn, case_id)
+        if case and case["status"] != "needs_person":
+            cases.transition(conn, case_id, "needs_person", reason)

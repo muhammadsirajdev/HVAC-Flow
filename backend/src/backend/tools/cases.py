@@ -61,7 +61,19 @@ def open_case(conn: Connection, customer_id: int, channel: str, status: str = "o
     return case
 
 
+def get_case(conn: Connection, case_id: int) -> dict | None:
+    return conn.execute("SELECT * FROM cases WHERE case_id = %s", (case_id,)).fetchone()
+
+
+def find_by_thread(conn: Connection, thread_id: str) -> dict | None:
+    return conn.execute("SELECT * FROM cases WHERE email_thread_id = %s", (thread_id,)).fetchone()
+
+
 def set_email_thread(conn: Connection, case_id: int, thread_id: str) -> None:
+    """Link an email thread to a case. A thread belongs to one case: a new request in the
+    thread of a closed case moves the thread to the new case."""
+    conn.execute("UPDATE cases SET email_thread_id = NULL WHERE email_thread_id = %s AND case_id <> %s",
+                 (thread_id, case_id))
     conn.execute(
         "UPDATE cases SET email_thread_id = %s, updated_at = now() WHERE case_id = %s",
         (thread_id, case_id),

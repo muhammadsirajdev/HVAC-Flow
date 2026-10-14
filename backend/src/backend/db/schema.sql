@@ -67,6 +67,9 @@ CREATE TABLE IF NOT EXISTS bookings (
 -- is detected and sent later instead of being lost.
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS confirmation_sent_at TIMESTAMPTZ;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS slack_posted_at TIMESTAMPTZ;
+-- A change in progress (email): times offered but not held; cleared when the booking moves.
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS pending_slot_ids BIGINT[];
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS pending_since TIMESTAMPTZ;
 CREATE UNIQUE INDEX IF NOT EXISTS bookings_one_per_slot ON bookings (slot_id) WHERE active;
 CREATE UNIQUE INDEX IF NOT EXISTS bookings_one_per_case ON bookings (case_id) WHERE active;
 
@@ -83,6 +86,7 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS messages_provider_uq ON messages (channel, provider_msg_id)
   WHERE provider_msg_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS messages_thread_idx ON messages (channel, thread_key, created_at);
 
 CREATE TABLE IF NOT EXISTS slack_events (
   event_id    TEXT PRIMARY KEY,

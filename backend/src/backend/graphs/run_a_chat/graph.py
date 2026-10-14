@@ -18,28 +18,37 @@ from backend.graphs.run_a_chat.deps import RunADeps, default_deps
 from backend.graphs.run_a_chat.nodes import RunANodes
 
 
-def build_graph(deps: RunADeps | None = None, checkpointer: BaseCheckpointSaver | None = None):
-    nodes = RunANodes(deps or default_deps())
-    g = StateGraph(ChatState)
+def add_chat_nodes(g: StateGraph, nodes: RunANodes) -> None:
+    """The conversation nodes, shared with Run B (email), which adds its own on top.
+
+    Every node reads the graph's full state: without input_schema, LangGraph would narrow an
+    inherited node to its ChatState type hint and hide Run B's keys (verified, customer_email).
+    """
+    def add(name: str, action, **kw) -> None:
+        g.add_node(name, action, input_schema=g.state_schema, **kw)
 
     # Nodes that return Command(goto=...) route themselves; `destinations` is for drawing.
-    g.add_node("guard", nodes.guard, destinations=("classify", "respond"))
-    g.add_node("classify", nodes.classify,
-               destinations=("rag_answer", "booking_step", "fixed_reply", "smalltalk", "fallback_form"))
-    g.add_node("rag_answer", nodes.rag_answer)
-    g.add_node("fixed_reply", nodes.fixed_reply)
-    g.add_node("smalltalk", nodes.smalltalk)
-    g.add_node("fallback_form", nodes.fallback_form)
-    g.add_node("booking_step", nodes.booking_step, destinations=("create_booking", "respond"))
-    g.add_node("create_booking", nodes.create_booking, destinations=("notify", "respond"))
-    g.add_node("notify", nodes.notify)
-    g.add_node("respond", nodes.respond)
+    add("guard", nodes.guard, destinations=("classify", "respond"))
+    add("classify", nodes.classify,
+        destinations=("rag_answer", "booking_step", "fixed_reply", "smalltalk", "fallback_form"))
+    add("rag_answer", nodes.rag_answer)
+    add("fixed_reply", nodes.fixed_reply, destinations=("respond",))
+    add("smalltalk", nodes.smalltalk)
+    add("fallback_form", nodes.fallback_form)
+    add("booking_step", nodes.booking_step, destinations=("create_booking", "respond"))
+    add("create_booking", nodes.create_booking, destinations=("notify", "respond"))
+    add("notify", nodes.notify)
+    add("respond", nodes.respond)
 
-    g.add_edge(START, "guard")
-    for name in ("rag_answer", "fixed_reply", "smalltalk", "fallback_form", "notify"):
+    for name in ("rag_answer", "smalltalk", "fallback_form", "notify"):
         g.add_edge(name, "respond")
     g.add_edge("respond", END)
 
+
+def build_graph(deps: RunADeps | None = None, checkpointer: BaseCheckpointSaver | None = None):
+    g = StateGraph(ChatState)
+    add_chat_nodes(g, RunANodes(deps or default_deps()))
+    g.add_edge(START, "guard")
     if checkpointer is None:
         from backend.graphs.common.checkpointer import get_checkpointer
         checkpointer = get_checkpointer()

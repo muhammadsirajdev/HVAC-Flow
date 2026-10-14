@@ -22,6 +22,7 @@ from langchain_core.tools import BaseTool
 from backend.config import get_settings
 from backend.core.errors import MCPError
 from backend.db.session import get_pool
+from backend.graphs.common.state import CHANNEL_LABELS
 from backend.mcp import email_mcp, slack_mcp
 from backend.tools import cases
 from backend.tools.booking import BookingResult, StoredBooking, mark_notified
@@ -44,14 +45,19 @@ def render(template: str, /, **ctx) -> str:
                                                 business_phone=s.business_phone, **ctx).strip()
 
 
-def send_booking_confirmation(result: BookingResult, tools: Tools = None) -> bool:
-    """Email the confirmation with gmail_send_email; retried once. Links the thread to the case."""
+def confirmation_email(result: BookingResult) -> tuple[str, str]:
+    """(subject, body) of the booking/change confirmation, written by code after the write succeeded."""
     r = result.request
     ctx = dict(case_id=result.case_id, service=r.service, slot_label=result.slot_label, name=r.name,
                address=r.address, problem=r.problem, phone=r.phone, updated=result.updated,
                previous_slot_label=result.previous_slot_label)
-    subject = render("email/confirmation_subject.txt.j2", **ctx)
-    body = render("email/confirmation.txt.j2", **ctx)
+    return render("email/confirmation_subject.txt.j2", **ctx), render("email/confirmation.txt.j2", **ctx)
+
+
+def send_booking_confirmation(result: BookingResult, tools: Tools = None) -> bool:
+    """Email the confirmation with gmail_send_email; retried once. Links the thread to the case."""
+    r = result.request
+    subject, body = confirmation_email(result)
     send_tool = (tools or {}).get(get_settings().gmail_send_tool)
     for attempt in (1, 2):
         try:
@@ -89,23 +95,31 @@ def _post(channel: str, text: str, tools: Tools = None) -> bool:
         return False
 
 
-def post_booking(result: BookingResult, tools: Tools = None) -> bool:
+def _booking_lines(result: BookingResult) -> str:
     r = result.request
-    details = (f"*Customer:* {r.name}\n*Service:* {r.service}\n{{time}}\n"
-               f"*Address:* {r.address}\n*Phone:* {r.phone}\n*Email:* {r.email}\n*Problem:* {r.problem}")
-    if result.updated:
-        if result.previous_slot_label != result.slot_label:
-            time = f"*Time:* {result.slot_label} (was {result.previous_slot_label})"
-        else:
-            time = f"*Time:* {result.slot_label} (unchanged)"
-        title = f":pencil2: *Booking changed — Case #{result.case_id}* (same website chat session)"
+    return (f"*Customer:* {r.name}\n*Service:* {r.service}\n*Time:* {result.slot_label}\n"
+            f"*Address:* {r.address}\n*Phone:* {r.phone}\n*Email:* {r.email}\n*Problem:* {r.problem}")
+
+
+def post_booking(result: BookingResult, tools: Tools = None) -> bool:
+    via = CHANNEL_LABELS.get(result.request.channel, result.request.channel)
+    if not result.updated:
+        title = f":calendar: *New booking — Case #{result.case_id}* ({via})"
+    elif result.previous_slot_label != result.slot_label:
+        title = (f":repeat: *Case #{result.case_id} rescheduled:* {result.previous_slot_label} → "
+                 f"{result.slot_label} ({via})")
     else:
-        time = f"*Time:* {result.slot_label}"
-        title = f":calendar: *New booking — Case #{result.case_id}* (website chat)"
-    ok = _post(get_settings().slack_bookings_channel, f"{title}\n" + details.replace("{time}", time), tools)
+        title = f":pencil2: *Booking details changed — Case #{result.case_id}* ({via})"
+    ok = _post(get_settings().slack_bookings_channel, f"{title}\n{_booking_lines(result)}", tools)
     if ok:
         _mark(result.booking_id, slack=True)
     return ok
+
+
+def post_cancellation(result: BookingResult, tools: Tools = None) -> bool:
+    via = CHANNEL_LABELS.get(result.request.channel, result.request.channel)
+    return _post(get_settings().slack_bookings_channel,
+                 f":x: *Case #{result.case_id} cancelled* ({via})\n{_booking_lines(result)}", tools)
 
 
 def _mark(booking_id: int, **flags) -> None:
@@ -132,10 +146,11 @@ def post_needs_person(case_id: int, reason: str, details: dict, tools: Tools = N
                  f":raising_hand: *Case #{case_id} needs a person* — {reason}\n{lines}", tools)
 
 
-def post_urgent(text: str, session_id: str, tools: Tools = None) -> bool:
+def post_urgent(text: str, source: str, tools: Tools = None) -> bool:
+    """`source` says where it came from: "website chat, <session id>" or "email, Case #12, <sender>"."""
     s = get_settings()
     return _post(s.slack_urgent_channel or s.slack_bookings_channel,
-                 f":rotating_light: *URGENT — possible emergency in website chat* (session {session_id})\n"
+                 f":rotating_light: *URGENT — possible emergency* ({source})\n"
                  f"> {text[:500]}", tools)
 
 

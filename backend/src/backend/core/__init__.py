@@ -1,1 +1,1 @@
-"""Cross-cutting helpers: logging, errors, time zone."""
+"""Cross-cutting helpers: errors and time zone."""

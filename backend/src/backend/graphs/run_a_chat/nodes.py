@@ -28,7 +28,7 @@ from langgraph.types import Command
 from backend.config import get_settings
 from backend.core.errors import AlreadyBooked, ContactInUse, LateChange, SlotTaken
 from backend.core.timeutil import now
-from backend.graphs.common.state import REQUIRED_BOOKING_FIELDS, ChatState
+from backend.graphs.common.state import CHANNEL_LABELS, REQUIRED_BOOKING_FIELDS, ChatState
 from backend.graphs.run_a_chat.deps import RunADeps, format_history
 from backend.tools.booking import BookingRequest, BookingResult
 from backend.tools.guardrails import is_emergency, safety_message
@@ -76,6 +76,10 @@ def _last_human_text(state: ChatState) -> str:
 
 def _booking_in_progress(state: ChatState) -> bool:
     return bool(state.get("booking")) and not state.get("booked")
+
+
+def where(state: ChatState) -> str:
+    return CHANNEL_LABELS.get(state.get("channel", "web"), "website chat")
 
 
 def _amend_allowed(state: ChatState) -> bool:
@@ -190,6 +194,23 @@ class RunANodes:
     def __init__(self, deps: RunADeps):
         self.deps = deps
 
+    # --- channel rules (Run B overrides these) ---------------------------------------------
+
+    def context(self, state: ChatState) -> str:
+        return booking_context(state)
+
+    def amend_allowed(self, state: ChatState) -> bool:
+        return _amend_allowed(state)
+
+    def change_refused(self, state: ChatState) -> Command:
+        return Command(goto="respond", update={"awaiting_confirmation": False, "chosen_slot": None,
+                                               "reply": _email_only(state.get("case_id"))})
+
+    def cancel_requested(self, state: ChatState) -> Command:
+        return Command(goto="respond", update={"reply": (
+            f"To cancel Case #{state.get('case_id')}, please reply to your confirmation email "
+            "and our team will take care of it.")})
+
     # --- entry --------------------------------------------------------------------
 
     def guard(self, state: ChatState) -> Command:
@@ -198,7 +219,8 @@ class RunANodes:
         text = _last_human_text(state)
         if is_emergency(text):
             try:
-                self.deps.post_urgent(text, state.get("session_id", "?"), self.deps.mcp_tools)
+                self.deps.post_urgent(text, f"{where(state)}, {state.get('session_id', '?')}",
+                                      self.deps.mcp_tools)
             except Exception:
                 log.exception("urgent Slack alert failed")
             return Command(goto="respond", update={**reset, "emergency": True, "intent": "emergency",
@@ -209,7 +231,7 @@ class RunANodes:
         text = _last_human_text(state)
         history = format_history(state.get("messages", [])[:-1])
         try:
-            analysis = self.deps.analyze(text, history, booking_context(state))
+            analysis = self.deps.analyze(text, history, self.context(state))
         except Exception:
             log.exception("classifier failed")
             return Command(goto="fallback_form")
@@ -223,7 +245,7 @@ class RunANodes:
         if state.get("awaiting_confirmation") and analysis.confirmation == "yes":
             collect = False
         # After booking, only the same session (within the window) may change details.
-        if state.get("booked") and not _amend_allowed(state):
+        if state.get("booked") and not self.amend_allowed(state):
             collect = False
         invalid, changed = [], []
         for field in ("name", "address", "problem", "service", "preferred_date", "part_of_day"):
@@ -290,13 +312,13 @@ class RunANodes:
 
     # --- fixed replies -------------------------------------------------------------------
 
-    def fixed_reply(self, state: ChatState) -> dict:
+    def fixed_reply(self, state: ChatState) -> Command:
         intent = state.get("intent")
         case_id = state.get("case_id")
         if intent == "booking_status":
             reply = self._status_text(state)
         elif intent == "change_or_cancel":
-            reply = _email_only(case_id)
+            return self.change_refused(state)
         elif intent == "payment":
             reply = ("Please don't share card or payment details here. We never take payment in this "
                      "chat. I'm happy to help with questions or book a visit.")
@@ -306,7 +328,7 @@ class RunANodes:
         else:
             reply = (f"I can help with heating and cooling questions and booking a visit with "
                      f"{get_settings().business_name}. What can I do for you?")
-        return {"reply": reply}
+        return Command(goto="respond", update={"reply": reply})
 
     def _status_text(self, state: ChatState) -> str:
         """Booking status from THIS chat's state only; never looked up by contact details."""
@@ -369,19 +391,17 @@ class RunANodes:
         lb = state.get("last_booking") or {}
 
         if amending:
-            if not _amend_allowed(state):
-                return Command(goto="respond", update={"reply": _email_only(state.get("case_id"))})
+            if not self.amend_allowed(state):
+                return self.change_refused(state)
             if a.get("wants_cancel"):
-                return Command(goto="respond", update={"reply": (
-                    f"To cancel Case #{state.get('case_id')}, please reply to your confirmation email "
-                    "and our team will take care of it.")})
+                return self.cancel_requested(state)
         elif a.get("wants_cancel"):
             return Command(goto="respond", update={
                 "booking": {}, "offered_slots": [], "chosen_slot": None, "awaiting_confirmation": False,
                 "reply": "No problem, I've stopped the booking. Nothing was booked. Anything else I can help with?"})
 
         target = a.get("change_target")
-        if target == "time":
+        if target == "time" and not a.get("slot_choice"):
             a = {**a, "wants_other_times": True}
         # They named a detail to change but did not give the new value: ask for exactly that.
         if target in CHANGE_QUESTIONS and not a.get("changed") and not state.get("invalid_fields"):
@@ -470,8 +490,9 @@ class RunANodes:
         try:
             case_id = self.deps.create_needs_person_case(
                 b.get("name"), b.get("phone"), b.get("email"), b.get("address"),
-                note=f"No open slots in chat. Problem: {b.get('problem')}")
-            self.deps.post_needs_person(case_id, "no open times in website chat", b, self.deps.mcp_tools)
+                note=f"No open slots ({where(state)}). Problem: {b.get('problem')}",
+                channel=state.get("channel", "web"))
+            self.deps.post_needs_person(case_id, f"no open times ({where(state)})", b, self.deps.mcp_tools)
         except Exception:
             log.exception("could not open needs_person case")
             case_id = None
@@ -490,10 +511,8 @@ class RunANodes:
                              problem=b["problem"], channel=state.get("channel", "web"))
         try:
             if amending:
-                if not _amend_allowed(state):
-                    return Command(goto="respond", update={
-                        "awaiting_confirmation": False, "chosen_slot": None,
-                        "reply": _email_only(state.get("case_id"))})
+                if not self.amend_allowed(state):
+                    return self.change_refused(state)
                 result = self.deps.change_booking(lb["booking_id"], req)
             else:
                 result = self.deps.create_booking(req)
@@ -515,7 +534,7 @@ class RunANodes:
                                                    "reply": self._already_booked(exc.case_id)})
         except LateChange:
             try:
-                self.deps.post_needs_person(state.get("case_id"), "late change requested in website chat",
+                self.deps.post_needs_person(state.get("case_id"), f"late change requested ({where(state)})",
                                             b, self.deps.mcp_tools)
             except Exception:
                 log.exception("needs-person Slack post failed")

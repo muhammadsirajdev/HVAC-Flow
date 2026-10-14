@@ -58,35 +58,36 @@ class RunADeps:
 
 # --- real implementations ---------------------------------------------------------
 
-def analyze(message: str, history: str, booking_context: str) -> TurnAnalysis:
+def analyze(message: str, history: str, booking_context: str, channel: str = "website chat") -> TurnAnalysis:
     s = get_settings()
     today = now()
-    prompt = _fill(load_prompt(PROMPTS / "classify.md"), business=s.business_name,
+    prompt = _fill(load_prompt(PROMPTS / "classify.md"), business=s.business_name, channel=channel,
                    today=f"{today:%A %Y-%m-%d}", timezone=str(business_tz()),
                    services=", ".join(SERVICES), booking_context=booking_context,
                    history=history, message=message)
     return structured(TurnAnalysis).invoke(prompt)
 
 
-def answer(question: str, passages: str, history: str) -> str:
+def answer(question: str, passages: str, history: str, channel: str = "website chat") -> str:
     s = get_settings()
-    prompt = _fill(load_prompt(PROMPTS / "answer.md"), business=s.business_name,
+    prompt = _fill(load_prompt(PROMPTS / "answer.md"), business=s.business_name, channel=channel,
                    phone=s.business_phone, passages=passages, history=history, question=question)
     return str(get_chat_llm().invoke(prompt).content).strip()
 
 
-def smalltalk(message: str, booking_note: str) -> str:
+def smalltalk(message: str, booking_note: str, channel: str = "website chat") -> str:
     s = get_settings()
-    prompt = _fill(load_prompt(PROMPTS / "smalltalk.md"), business=s.business_name,
+    prompt = _fill(load_prompt(PROMPTS / "smalltalk.md"), business=s.business_name, channel=channel,
                    booking_note=booking_note, message=message)
     return str(get_chat_llm(0.3).invoke(prompt).content).strip()
 
 
-def phrase(task: str, facts: str, fallback: str, message: str, history: str) -> str:
+def phrase(task: str, facts: str, fallback: str, message: str, history: str,
+           channel: str = "website chat") -> str:
     """Word a code-decided message like a human receptionist. Falls back to the template
     if the model fails or adds anything (numbers, prices) that the task did not contain."""
     s = get_settings()
-    prompt = _fill(load_prompt(PROMPTS / "reply_writer.md"), business=s.business_name, task=task,
+    prompt = _fill(load_prompt(PROMPTS / "reply_writer.md"), business=s.business_name, channel=channel, task=task,
                    facts=facts or "(none)", history=history, message=message)
     try:
         text = str(get_chat_llm(0.4).invoke(prompt).content).strip().strip('"')
