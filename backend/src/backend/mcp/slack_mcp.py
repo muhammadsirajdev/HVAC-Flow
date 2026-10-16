@@ -1,7 +1,6 @@
-"""Slack through the Klavis Slack MCP server: resolve channel names, post messages.
-
-Reading the status channel (Run C) needs the Slack Events API and a Slack app;
-this module only posts. Check tool names with `python scripts/list_mcp_tools.py`.
+"""Slack through the Klavis Slack MCP server: resolve channel names, post messages, and read a
+channel's recent messages (the staff status channel, Run C).
+Check tool names with `python scripts/list_mcp_tools.py`.
 """
 
 from __future__ import annotations
@@ -44,3 +43,10 @@ def post_message(channel: str, text: str, tools: Mapping[str, BaseTool] | None =
     name = get_settings().slack_post_tool
     tool = (tools or {}).get(name) or name
     return call_tool(tool, {"channel_id": resolve_channel(channel, tools), "text": text})
+
+
+def channel_history(channel: str, limit: int = 200) -> list[dict]:
+    """Recent top-level messages of a channel, newest first: [{text, ts, user_id}]."""
+    data = parse_json(call_tool(get_settings().slack_history_tool,
+                                {"channel_id": resolve_channel(channel), "limit": limit}))
+    return data.get("messages") or []

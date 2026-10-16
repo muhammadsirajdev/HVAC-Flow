@@ -51,7 +51,7 @@ flowchart LR
   T --> DB[(Postgres)]
   T --> KB[(Chroma KB)]
   T --> SB[Slack #bookings]
-  SS[Slack #status<br/>DONE 123 / ISSUE 123] -->|Events API| RC[Run C: status handler]
+  SS[Slack status channel<br/>case 123 status done] -->|read every 12 h via MCP| RC[Run C: status handler]
   RC --> DB
   RC -->|thank-you| E
   SCHED[APScheduler] -->|daily 6 PM| RD[Run D: reminders]
@@ -380,7 +380,7 @@ The site's enquiry form emails the same inbox, but from the website's own addres
 3. **Sender with exactly one open case.** This joins the email to the conversation only; it does **not** count for changes or cancellations (section 6.5).
 4. **No match:** a new case, under the existing customer if the address is known, otherwise under a new customer.
 
-A reply in the thread of a closed case is handled by what it says: a plain "thanks" gets no reply; a new request opens a new case (the thread moves to it), and the reply carries the new case number.
+A reply to a closed case is handled by what it says: a plain "thanks" gets no reply. Anything else about a **completed job** (e.g. a reply to the thank-you: "still not cooling") opens a new case that goes **straight to a person**: Slack alert, the fixed acknowledgement to the customer, no AI reply (it may be a warranty callback, so the AI must not quote a visit fee). After a **cancellation**, a new request opens a new case the AI handles as usual.
 "Thanks only" is a code check: short, a thanks word, no question or request word. It applies only to closed cases and new mail: on an open case "ok, thanks" may be the yes to a summary.
 
 ### 6.4 The conversation
@@ -422,20 +422,19 @@ From any other address nothing changes: the agent replies that it couldn't confi
 
 **#bookings:** each new booking, change or cancellation, with the case number, customer, service, time, address and phone. A change shows old → new, for example `🔁 Case #123 rescheduled: Thu 16 Oct 10:00 AM → Fri 17 Oct 2:00 PM`, followed by the full booking details.
 
-**#status:** employees post one line per finished job.
+**Status channel (`SLACK_STATUS_CHANNEL`, staff only):** staff post a line per finished job in their own words, e.g. "case 123 status done, replaced the capacitor". A message counts when it names a case number **and** a done word (done, completed, finished, closed); "case 124 not done yet" and "case 125 delayed" don't count.
 
-| Message | Effect |
-|---|---|
-| `DONE 123` | Case 123 → done; a thank-you email goes out in its thread; the case → closed |
-| `ISSUE 123 <note>` | Case 123 → needs_person; nothing is sent to the customer |
-| `RESUME 123` | Case 123 leaves needs_person (→ booked if it has an active booking, otherwise open); the AI replies again on its next email |
-| Anything else | The bot replies with the three formats above |
+Run C reads the channel through the Slack MCP (`slack_get_channel_history`). There's no Slack app, Events API or public URL. It runs every `SLACK_STATUS_HOURS` (12 in production) and on demand for testing. For each case reported done:
+- **already closed** → skipped (this is what stops a second thank-you when the same message is read again);
+- **booked** → code-written thank-you email to the customer's address (Gmail MCP), then the case → done → closed;
+- **anything else** (no such case, not booked, waiting for a person) → skipped;
+- **email fails** → the case stays open and is retried next run.
 
-After acting, the bot replies in the Slack thread ("Case 123 marked done, thank-you sent"). This needs a **Slack app** with `chat:write` and `channels:history` (or `groups:history`) plus an Events API subscription. A posting-only webhook isn't enough.
+Nothing is posted back to Slack. `ISSUE` and `RESUME` commands are not part of this (a person handles `needs_person` cases by hand).
 
 ### 6.7 Reminders
 
-A daily job (6 PM, business time zone) emails a reminder the day before each visit, in the case's thread, and marks the booking `reminded`. It repeats the time and address and says to reply to change or cancel.
+A daily job (6 PM, business time zone) emails a reminder the day before each visit (subject `[Case #N] Reminder: …`, so a reply joins the case) and marks the booking `reminded`. It repeats the time and address and says to reply to change or cancel.
 
 ### 6.8 Acceptance checks
 
@@ -452,7 +451,7 @@ A daily job (6 PM, business time zone) emails a reminder the day before each vis
 - [ ] "I smell gas" by email gets the safety message and an urgent Slack alert, no AI reply
 - [ ] An email the agent can't handle gets only the fixed acknowledgement; the case goes to needs_person and Slack; `RESUME 123` hands it back
 - [ ] An email opened in Gmail by staff before the poll is still handled; a handled email is never answered twice
-- [ ] `DONE 123` in Slack sends the thank-you and closes the case
+- [ ] "case 123 status done" in the status channel sends the thank-you and closes the case; reading it again sends nothing
 - [ ] A later email from the same customer opens Case 124 under the same customer
 - [ ] Tomorrow's visits get a reminder today, once
 
@@ -531,7 +530,7 @@ The tools are limited so tightly that a fooled model can only send a bad reply. 
 | AI model | Small, fast, tool-calling | Groq or Google AI Studio free tiers for the demo |
 | Chat widget | Small embeddable script | Calls the chat endpoint |
 | Email | Email MCP on the client-queries inbox | Polled every 1 to 2 minutes |
-| Slack | Slack app: post to #bookings, read #status | A webhook alone can only post |
+| Slack | Klavis Slack MCP: post to #bookings, read the status channel | No Slack app or webhook needed |
 | Scheduler | APScheduler inside the app | Email polling and daily reminders |
 | WhatsApp (phase 2) | WhatsApp Cloud API | Webhook in, send endpoint out, templates outside 24 hours |
 
@@ -594,7 +593,7 @@ hvacX/
         └── templates/                # email/*.j2, safety_message.txt
 ```
 
-`scheduler.py` runs the inbox poll (APScheduler). Packages for later runs (`run_c_slack_status/`, `run_d_reminders/`, `run_e_whatsapp/`, the embeddable `widget/`) are added when each is built.
+`scheduler.py` runs the inbox poll and the Slack status check (APScheduler). Packages for later runs (`run_d_reminders/`, `run_e_whatsapp/`, the embeddable `widget/`) are added when each is built.
 
 Where code goes:
 - `api/` only parses requests and calls a graph or channel adapter; no business logic.
@@ -615,7 +614,7 @@ Five runs, each with its own trigger. They never call each other and share work 
 |---|---|---|---|---|
 | A | A visitor sends a chat message | Every message | One per chat session | Yes |
 | B | Timer checks the inbox through the email MCP | Every 1 to 2 minutes | One per case | Yes |
-| C | An employee posts in Slack #status | Every post (Slack event) | None | No |
+| C | Timer reads the Slack status channel through the MCP | Every 12 hours (on demand for testing) | None | No |
 | D | Daily timer | Once a day, 6 PM | None | No |
 | E | WhatsApp message reaches the webhook (phase 2) | Every message | One per phone number | Yes |
 
@@ -656,26 +655,19 @@ The email timer sets how long a customer waits: at 15 minutes, each reply could 
 
 | Node | Kind | What it does | If it fails |
 |---|---|---|---|
-| parse | Code | `DONE 123`, `ISSUE 123 <note>` or `RESUME 123` | Other text → help_reply |
-| validate_case | Code | Case exists, is booked, post not handled before | Invalid → reason posted in Slack |
-| mark_done | Code | Case → done | |
-| send_thanks | Code | Thank-you in the email thread, or a WhatsApp template | Send fails → Slack: thank by phone |
-| close_case | Code | Case → closed | |
-| confirm_slack | Code | "Case 123 marked done, thank-you sent" in the thread | |
-| needs_person | Person alerted | ISSUE: case → needs_person; nothing sent to the customer | |
-| resume | Code | RESUME: needs_person → booked (active booking) or open | Case not in needs_person → reason posted |
-| help_reply | Code | Replies with the three accepted formats | |
+| read_slack | Code | Status channel messages (MCP) → case numbers reported done | MCP down → the run fails, the next run retries |
+| close_cases | Code | Per case: closed → skip; booked → thank-you email, then done → closed; else skip | Email fails → case stays open for the next run |
 
-Slack requires a 200 response within 3 seconds, so the endpoint acknowledges immediately and runs C in a background task.
+Runs every `SLACK_STATUS_HOURS` (`SLACK_STATUS_ENABLED=true`), or by hand: `uv run python -m backend.graphs.run_c_slack_status.graph`.
 
 ### Run D: daily reminders
 
 | Node | Kind | What it does | If it fails |
 |---|---|---|---|
-| find_tomorrow | Code | Booked visits tomorrow, not reminded, in the business time zone | |
-| send_reminder | Code | Time, address, "reply to change or cancel", by email thread or WhatsApp template | Send fails → Slack: remind by phone |
-| mark_reminded | Code | Never reminds twice | |
-| stale_changes | Code | Bookings tomorrow with a change still pending → Slack "please call" | |
+| find_tomorrow | Code | Booked visits tomorrow (business time zone), not reminded yet | |
+| send_reminders | Code | Per visit: change offers still unanswered → Slack "please call"; reminder email (Gmail MCP, new email with `[Case #N]` in the subject: time, address, "reply to change or cancel"); then `reminded` = true | Send fails → Slack: remind by phone (not marked) |
+
+Runs daily at `REMINDER_HOUR` (`REMINDERS_ENABLED=true`), or by hand: `uv run python -m backend.graphs.run_d_reminders.graph`. A moved booking resets `reminded`, so the new time is reminded again.
 
 ### Run E: WhatsApp message (phase 2)
 
@@ -705,7 +697,7 @@ Build one working slice at a time; **don't start the next step until its check p
 | 6 | **Slack #bookings** | Slack app; `post_to_slack` for booking/change/cancel/urgent/needs_person | Every booking appears in Slack with its case number |
 | 7 | **Email agent: read + reply** ✅ built | Polling job (message-ID based, not unread), filters, emergency guard, website form parsing, case matching, answering only (no booking), needs_person with fixed acknowledgement | Replies arrive within 2 minutes; an out-of-office gets none; a form enquiry is answered at the customer's address |
 | 8 | **Email agent: booking + changes** ✅ built | Booking over email; thread + sender check; change/cancel with the sender checks; pending offers; change-confirmation template; Slack old → new; the 2-hour rule | The section 6 checks for booking and changes pass |
-| 9 | **Slack status loop + reminders** | Events endpoint, Run C (DONE / ISSUE / RESUME), thank-you template, Run D at 6 PM with the stale-change alert | `DONE 123` closes the case and the customer gets the thank-you |
+| 9 | **Slack status loop + reminders** ✅ built (Runs C, D) | Run C reads the status channel via MCP every 12 h, thank-you template, close the case. Run D: 6 PM reminders, stale-change alert | "case 123 status done" closes the case and the customer gets the thank-you, once |
 | 10 | **Demo run** | `demo_reset.py`; scripted story: chat booking → email change → DONE → thank-you | Runs twice in a row without touching code |
 | 11 | **WhatsApp (phase 2)** | Meta setup, webhook, adapter, templates, 24-hour logic, media, STOP, language | A real phone books, changes and gets the thank-you |
 

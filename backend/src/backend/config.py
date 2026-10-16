@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     gmail_modify_tool: str = "gmail_modify_email"
     slack_post_tool: str = "slack_user_post_message"
     slack_list_channels_tool: str = "slack_user_list_channels"
+    slack_history_tool: str = "slack_get_channel_history"
     mcp_timeout: float = 30.0
 
     # --- Email agent (Run B) ---
@@ -62,6 +63,15 @@ class Settings(BaseSettings):
     # --- Slack channels: a channel NAME (looked up with slack_user_list_channels) or an ID ---
     slack_urgent_channel: str = "slack_urgent_channel"
     slack_bookings_channel: str = ""          # empty -> everything goes to the urgent channel
+    slack_status_channel: str = ""            # staff post "case 123 status done" here (Run C)
+
+    # --- Job status (Run C): read the status channel, thank and close finished cases ---
+    slack_status_enabled: bool = False        # run it on a timer inside the app
+    slack_status_hours: float = 12
+
+    # --- Day-before reminders (Run D) ---
+    reminders_enabled: bool = False           # send them daily inside the app
+    reminder_hour: int = 18                   # business time zone
 
     # --- Chat booking flow ---
     slot_offer_count: int = 3

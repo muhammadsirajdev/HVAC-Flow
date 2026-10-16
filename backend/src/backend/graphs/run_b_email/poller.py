@@ -83,6 +83,8 @@ def handle(batch: list[Email], graph=None) -> bool:
             case = known and cases.get_open_case(conn, known["customer_id"])
             if not case:
                 return _ignore(batch, "not addressed to the agent")
+        # A reply about a finished job (e.g. to the thank-you) may be a complaint: a person answers it.
+        completed = case is not None and case["status"] in ("done", "closed")
         if case is None or case["status"] in CLOSED:
             # On an open case "ok, thanks" may be the yes to a summary, so only here is it skipped.
             if mail.is_thanks_only(text):
@@ -119,7 +121,8 @@ def handle(batch: list[Email], graph=None) -> bool:
         "customer_name": customer["name"], "customer_phone": customer["phone"],
         # verify_sender (plan 6.5): the booking's own email address; never a form email
         "verified": not form and customer["email"] == last.sender,
-        "needs_person": (f"over {s.max_ai_replies_per_thread_per_hour} AI replies in an hour"
+        "needs_person": ("reply about a completed job" if completed else
+                         f"over {s.max_ai_replies_per_thread_per_hour} AI replies in an hour"
                          if replies >= s.max_ai_replies_per_thread_per_hour else None),
         **_booking_state(graph, config, case_id),
     }, config)

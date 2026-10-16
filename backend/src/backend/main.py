@@ -1,4 +1,4 @@
-"""FastAPI app: mounts the routers and, if enabled, starts the email poll.
+"""FastAPI app: mounts the routers and, if enabled, starts the background jobs.
 
     uv run uvicorn backend.main:app --reload
 """
@@ -18,7 +18,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(na
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     scheduler = None
-    if get_settings().email_poll_enabled:
+    s = get_settings()
+    if s.email_poll_enabled or s.slack_status_enabled or s.reminders_enabled:
         from backend import scheduler as jobs
         scheduler = jobs.start()
     yield

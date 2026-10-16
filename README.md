@@ -9,7 +9,9 @@ built for MD Cold Services. Full plan: [docs/plan.md](docs/plan.md). Scope doc: 
 |---|---|---|
 | A | Website chat: RAG answers, booking, confirmation email (Gmail MCP), Slack post | built |
 | B | Email agent: inbox poll, RAG answers, booking, verified change/cancel, needs-person hand-off | built |
-| C, D, E | Slack status, reminders, WhatsApp | planned |
+| C | Slack status: "case 123 status done" in the staff channel → thank-you email, case closed | built |
+| D | Day-before reminder emails, daily at 6 PM; Slack alert for unanswered change offers | built |
+| E | WhatsApp | planned |
 
 ## Layout
 
@@ -41,6 +43,25 @@ Replies in a case's thread are always taken; everything else in the mailbox is i
 ```bash
 cd backend
 uv run python -m backend.graphs.run_b_email.poller   # one poll by hand (it really replies)
+```
+
+## Slack status (Run C)
+
+Set `SLACK_STATUS_CHANNEL` (the staff channel) in `backend/.env`; `SLACK_STATUS_ENABLED=true` runs it
+every `SLACK_STATUS_HOURS` (12) inside the app.
+
+```bash
+cd backend
+uv run python -m backend.graphs.run_c_slack_status.graph   # one run by hand (it really emails)
+```
+
+## Reminders (Run D)
+
+`REMINDERS_ENABLED=true` sends them daily at `REMINDER_HOUR` (18, business time zone) inside the app.
+
+```bash
+cd backend
+uv run python -m backend.graphs.run_d_reminders.graph      # one run by hand (it really emails)
 ```
 
 ## Knowledge base (RAG)

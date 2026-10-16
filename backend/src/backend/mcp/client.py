@@ -34,7 +34,8 @@ def required_tools() -> dict[str, str]:
     """Tool name -> server. Only these are loaded; everything else on the servers is ignored."""
     s = get_settings()
     return {s.gmail_send_tool: GMAIL, s.gmail_search_tool: GMAIL, s.gmail_read_tool: GMAIL,
-            s.gmail_modify_tool: GMAIL, s.slack_post_tool: SLACK, s.slack_list_channels_tool: SLACK}
+            s.gmail_modify_tool: GMAIL, s.slack_post_tool: SLACK, s.slack_list_channels_tool: SLACK,
+            s.slack_history_tool: SLACK}
 
 
 def _run(coro_factory, timeout: float | None = None):
