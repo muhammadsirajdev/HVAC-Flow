@@ -1,11 +1,10 @@
 """Retrieval: embed the query with the ingestion model and search Chroma.
 
-    from backend.rag import search_kb, search_kb_multi, format_passages
+    from backend.rag import search_kb, search_kb_multi
     passages = search_kb("how much is the AC diagnostic?")
     passages = search_kb_multi(["Elite plan diagnostic", "after-hours charges"])  # multi-part question
     if not passages:   # nothing close enough -> the agent says it does not know
         ...
-    context = format_passages(passages)
 
 Selection (both functions):
   1. take the best `k * CANDIDATE_FACTOR` candidates by cosine similarity,
@@ -106,10 +105,3 @@ def search_kb(
     """
     return search_kb_multi([query], k=k, min_score=min_score, where=where, max_per_source=max_per_source)
 
-
-def format_passages(passages: list[Passage]) -> str:
-    """Context block for the agent prompt; IDs let the answer be traced to a source."""
-    if not passages:
-        return "NO_RELEVANT_PASSAGES"
-    return "\n\n".join(f"<passage id=\"{p.id}\" score=\"{p.score:.2f}\">\n{p.text}\n</passage>"
-                       for p in passages)

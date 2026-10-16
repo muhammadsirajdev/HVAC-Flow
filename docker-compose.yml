@@ -1,7 +1,7 @@
-# Local development: Postgres with pgvector. Add the api service once backend/Dockerfile is written.
+# Local development: Postgres (app data + LangGraph checkpoints). The knowledge base lives in Chroma.
 services:
   db:
-    image: pgvector/pgvector:pg16
+    image: postgres:16
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass

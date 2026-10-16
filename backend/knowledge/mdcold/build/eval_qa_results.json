@@ -1,0 +1,3657 @@
+{
+  "summary": {
+    "n": 51,
+    "answerable": 40,
+    "unanswerable": 11,
+    "route_ok": 0.9803921568627451,
+    "source_hit@k": 1.0,
+    "source_recall": 0.9791666666666666,
+    "mrr": 0.8458333333333333,
+    "fact_recall": 0.9791666666666666,
+    "empty_after_threshold": 0.0,
+    "must_include": 0.9666666666666667,
+    "correctness": 0.9875,
+    "faithfulness": 0.9803921568627451,
+    "false_refusal": 0.0,
+    "abstain_ok": 1.0,
+    "invented_on_unanswerable": 0.0,
+    "p50_ms": 2959,
+    "p95_ms": 4488
+  },
+  "rows": [
+    {
+      "id": "q01",
+      "question": "How much is the AC diagnostic?",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "AC diagnostic visit price and how to book | Is 24/7 emergency service available for AC repair?",
+      "retrieval_ms": 1310,
+      "answer_ms": 1785,
+      "retrieved": [
+        {
+          "id": "faq_do-you-provide-emergency-ac-repair_1",
+          "source": "06_faqs.md",
+          "score": 0.7482,
+          "kept": true
+        },
+        {
+          "id": "hours_emergency-and-after-hours-availability_1",
+          "source": "02_hours.md",
+          "score": 0.7252,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-features_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.6573,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.6038,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.5981,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.5534,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 0.5,
+      "empty_after_threshold": false,
+      "top_score": 0.7482,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 4958,
+      "answer": "The residential AC diagnostic is $99 as a limited-time offer (regular price $129). The fee is waived if you complete the recommended repair with MD Cold Services. Additional charges may apply for after-hours or emergency service. You can book by calling the 24/7 line at (786) 797-6193.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer accurately states the $99 diagnostic fee, waiver policy, possible extra charges, and booking info, all supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q02",
+      "question": "whats the regular price of the diagnostic, is 99 a deal?",
+      "category": "pricing",
+      "style": "typo",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What is the regular price of the diagnostic visit and is $99 a deal?",
+      "retrieval_ms": 1224,
+      "answer_ms": 1932,
+      "retrieved": [
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.5903,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5472,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.5399,
+          "kept": true
+        },
+        {
+          "id": "pricing_summary-of-all-prices_1",
+          "source": "05_pricing.md",
+          "score": 0.4197,
+          "kept": true
+        },
+        {
+          "id": "policy_pricing-policy_1",
+          "source": "07_policies.md",
+          "score": 0.4079,
+          "kept": true
+        },
+        {
+          "id": "pricing_commercial-service-call-and-diagnostic-pricing_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.393,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5903,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 5268,
+      "answer": "The regular price of the residential AC Repair Diagnostic is $129, and the $99 price is shown as a \"Limited-Time Offer,\" so yes, $99 is a deal. The diagnostic fee is waived if you complete the recommended repair with MD Cold Services.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states the regular price as $129, the $99 as a limited-time offer, and that the fee is waived if the repair is completed, all supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q03",
+      "question": "How much is the Elite plan for two units?",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Price of the Elite plan for two units",
+      "retrieval_ms": 935,
+      "answer_ms": 2030,
+      "retrieved": [
+        {
+          "id": "plan_elite-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4937,
+          "kept": true
+        },
+        {
+          "id": "plan_premium-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4151,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3442,
+          "kept": true
+        },
+        {
+          "id": "policy_maintenance-plan-terms_1",
+          "source": "07_policies.md",
+          "score": 0.321,
+          "kept": true
+        },
+        {
+          "id": "pricing_commercial-service-call-and-diagnostic-pricing_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.2878,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.2811,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4937,
+      "derived_facts": [
+        "$579"
+      ],
+      "fact_recall": 1.0,
+      "total_ms": 4695,
+      "answer": "The Elite Comfort Plan is $379/year for 1 residential system, and each additional system at the same location is $200/year. So for two units, the price would be $379 + $200 = $579/year.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly calculates the Elite plan price for two units using the prices given in the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q04",
+      "question": "i have 3 ac units in same house how much essential plan",
+      "category": "pricing",
+      "style": "typo",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "How much does the Essential Plan cost for 3 AC units in the same house?",
+      "retrieval_ms": 1198,
+      "answer_ms": 1354,
+      "retrieved": [
+        {
+          "id": "plan_essential-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.5876,
+          "kept": true
+        },
+        {
+          "id": "plan_premium-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.514,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.4799,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.4273,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.4145,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.4104,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5876,
+      "derived_facts": [
+        "$479"
+      ],
+      "fact_recall": 1.0,
+      "total_ms": 4402,
+      "answer": "The Essential Comfort Plan costs $179/year for the first residential system and $150/year for each additional system at the same location. For 3 AC units, the total would be $179 + $150 + $150 = $479 per year.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly calculates the Essential Comfort Plan price for 3 AC units using the prices from the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q05",
+      "question": "elite plan ka price kya hai?",
+      "category": "pricing",
+      "style": "roman_urdu",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What is the price of the Elite Plan?",
+      "retrieval_ms": 792,
+      "answer_ms": 1205,
+      "retrieved": [
+        {
+          "id": "plan_elite-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.5397,
+          "kept": true
+        },
+        {
+          "id": "plan_premium-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4297,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3527,
+          "kept": true
+        },
+        {
+          "id": "policy_maintenance-plan-terms_1",
+          "source": "07_policies.md",
+          "score": 0.2969,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.2768,
+          "kept": true
+        },
+        {
+          "id": "hours_after-hours-and-emergency-service-charges_1",
+          "source": "02_hours.md",
+          "score": 0.2692,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5397,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3972,
+      "answer": "The price of the MD Cold Services Elite Comfort Plan is $379/year for 1 residential system. Each additional system at the same location is $200/year.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The chatbot correctly states the Elite Comfort Plan price and the cost for additional systems, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q06",
+      "question": "What maintenance plans do you offer?",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What maintenance plans do you offer?",
+      "retrieval_ms": 1082,
+      "answer_ms": 1669,
+      "retrieved": [
+        {
+          "id": "policy_maintenance-plan-terms_1",
+          "source": "07_policies.md",
+          "score": 0.5383,
+          "kept": true
+        },
+        {
+          "id": "plan_commercial-maintenance-agreements_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.5315,
+          "kept": true
+        },
+        {
+          "id": "plan_premium-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4987,
+          "kept": true
+        },
+        {
+          "id": "plan_essential-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4859,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-offer-preventive-maintenance-for-commerci_1",
+          "source": "06_faqs.md",
+          "score": 0.4845,
+          "kept": true
+        },
+        {
+          "id": "booking_commercial-maintenance-consultation-requests_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.3976,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5383,
+      "derived_facts": [],
+      "fact_recall": 0.6666666666666666,
+      "total_ms": 4488,
+      "answer": "We offer two residential maintenance plans: the Premium Comfort Plan at $279/year for one system (additional systems $175/year) with two preventive visits per year, and the Essential Comfort Plan at $179/year for one system (additional systems $150/year) with one preventive visit per year. Both include a 15-point HVAC inspection, filter and thermostat checks, condensate drain service, system performance evaluation, priority scheduling, and a 10% discount on qualifying repairs. For commercial systems, we provide customized maintenance agreements—please request a consultation via our website.",
+      "refused": false,
+      "must_include": 0.6666666666666666,
+      "missing_facts": [
+        "$379"
+      ],
+      "correctness": 0.5,
+      "faithful": false,
+      "unsupported_claims": [
+        "We offer two residential maintenance plans (the reference lists three)",
+        "Both plans include a 15-point HVAC inspection, filter and thermostat checks, condensate drain service, system performance evaluation, priority scheduling, and a 10% discount on qualifying repairs (the Elite Comfort Plan is omitted and its features are not described)"
+      ],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer omits the Elite Comfort Plan, which is listed in the reference, and thus does not fully match the reference or passages.",
+      "judge_correctness": 0.5,
+      "false_refusal": false
+    },
+    {
+      "id": "q07",
+      "question": "premium plan me kitni visits hain saal mein?",
+      "category": "pricing",
+      "style": "roman_urdu",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "How many visits are included in the Premium Comfort Plan per year?",
+      "retrieval_ms": 360,
+      "answer_ms": 1201,
+      "retrieved": [
+        {
+          "id": "plan_premium-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.5847,
+          "kept": true
+        },
+        {
+          "id": "plan_essential-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.5078,
+          "kept": true
+        },
+        {
+          "id": "policy_maintenance-plan-terms_1",
+          "source": "07_policies.md",
+          "score": 0.434,
+          "kept": true
+        },
+        {
+          "id": "plan_commercial-maintenance-agreements_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.3326,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3017,
+          "kept": true
+        },
+        {
+          "id": "trust_experience-and-service-volume_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.2978,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5847,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3196,
+      "answer": "The Premium Comfort Plan includes 2 preventive maintenance visits per year (spring and fall).",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the Premium Comfort Plan includes 2 preventive maintenance visits per year, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q08",
+      "question": "what discount do elite members get on repairs",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What discount do elite members get on repairs?",
+      "retrieval_ms": 359,
+      "answer_ms": 1337,
+      "retrieved": [
+        {
+          "id": "plan_elite-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4814,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.3981,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3856,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.3533,
+          "kept": true
+        },
+        {
+          "id": "plan_essential-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.3479,
+          "kept": true
+        },
+        {
+          "id": "policy_maintenance-plan-terms_1",
+          "source": "07_policies.md",
+          "score": 0.3133,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4814,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3234,
+      "answer": "Elite Comfort Plan members get a 15% discount on qualifying parts and labor repairs.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The chatbot correctly states that Elite Comfort Plan members get a 15% discount on qualifying parts and labor repairs, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q09",
+      "question": "Essential plan repair discount?",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Essential plan repair discount",
+      "retrieval_ms": 340,
+      "answer_ms": 1206,
+      "retrieved": [
+        {
+          "id": "plan_essential-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4973,
+          "kept": true
+        },
+        {
+          "id": "plan_elite-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4427,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.4211,
+          "kept": true
+        },
+        {
+          "id": "policy_maintenance-plan-terms_1",
+          "source": "07_policies.md",
+          "score": 0.4053,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.3381,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3146,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4973,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2918,
+      "answer": "The Essential Comfort Plan offers a 10% discount on qualifying parts and labor repairs.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the Essential Comfort Plan offers a 10% discount on qualifying parts and labor repairs, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q10",
+      "question": "does elite plan give any discount on a whole new system",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Does the Elite Plan give any discount on a whole new system?",
+      "retrieval_ms": 369,
+      "answer_ms": 1157,
+      "retrieved": [
+        {
+          "id": "plan_elite-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.5636,
+          "kept": true
+        },
+        {
+          "id": "plan_essential-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.4512,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.4177,
+          "kept": true
+        },
+        {
+          "id": "policy_maintenance-plan-terms_1",
+          "source": "07_policies.md",
+          "score": 0.3961,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.3345,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-offer-financing-for-a-new-ac-system_1",
+          "source": "06_faqs.md",
+          "score": 0.3122,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5636,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2788,
+      "answer": "Yes, the Elite Comfort Plan gives 5% off a qualifying new HVAC system replacement, up to $500.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states the Elite Comfort Plan gives 5% off a qualifying new HVAC system replacement, up to $500, as supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q11",
+      "question": "Does the Elite plan include filter replacement?",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Does the Elite plan include filter replacement?",
+      "retrieval_ms": 337,
+      "answer_ms": 1500,
+      "retrieved": [
+        {
+          "id": "plan_elite-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.5845,
+          "kept": true
+        },
+        {
+          "id": "plan_premium-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.463,
+          "kept": true
+        },
+        {
+          "id": "policy_maintenance-plan-terms_1",
+          "source": "07_policies.md",
+          "score": 0.3759,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.371,
+          "kept": true
+        },
+        {
+          "id": "service_ac-installation-replacement-service-inclusions_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3354,
+          "kept": true
+        },
+        {
+          "id": "plan_commercial-maintenance-agreements_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.2852,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5845,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3031,
+      "answer": "Yes, the Elite Comfort Plan includes standard disposable filter replacement. Specialty, media, electronic, UV, and other premium filters are excluded.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the Elite plan includes standard disposable filter replacement and excludes specialty, media, electronic, UV, and other premium filters, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q12",
+      "question": "does the 15 point inspection check the capacitor",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Does the 15 point inspection check the capacitor?",
+      "retrieval_ms": 335,
+      "answer_ms": 1120,
+      "retrieved": [
+        {
+          "id": "service_15-point-hvac-inspection-in-maintenance-plans_1",
+          "source": "05_pricing.md",
+          "score": 0.5963,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-inspect-the-existing-insulation-before-ad_1",
+          "source": "06_faqs.md",
+          "score": 0.3954,
+          "kept": true
+        },
+        {
+          "id": "plan_essential-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.3305,
+          "kept": true
+        },
+        {
+          "id": "service_ac-installation-replacement-service-inclusions_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3297,
+          "kept": true
+        },
+        {
+          "id": "faq_how-do-i-know-if-my-ac-needs-repair_1",
+          "source": "06_faqs.md",
+          "score": 0.3254,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-features_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.3209,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5963,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2765,
+      "answer": "Yes, the 15-point inspection includes checking the capacitor condition and performance.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the 15-point inspection includes checking the capacitor, as supported by the retrieved passage.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q13",
+      "question": "How much is a commercial service call?",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Commercial HVAC service call price",
+      "retrieval_ms": 367,
+      "answer_ms": 1786,
+      "retrieved": [
+        {
+          "id": "pricing_commercial-service-call-and-diagnostic-pricing_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.6217,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.5757,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5456,
+          "kept": true
+        },
+        {
+          "id": "pricing_summary-of-all-prices_1",
+          "source": "05_pricing.md",
+          "score": 0.5382,
+          "kept": true
+        },
+        {
+          "id": "pricing_commercial-maintenance-agreement-pricing_1",
+          "source": "05_pricing.md",
+          "score": 0.5206,
+          "kept": true
+        },
+        {
+          "id": "hours_after-hours-and-emergency-service-charges_1",
+          "source": "02_hours.md",
+          "score": 0.5137,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6217,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3406,
+      "answer": "Commercial service-call and diagnostic charges vary by equipment type and scope. MD Cold Services confirms pricing before dispatch. There are no fixed commercial prices listed on the website. You can call (786) 797-6193 to get a specific quote or to book a visit.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer accurately states that commercial service call charges vary, are confirmed before dispatch, and no fixed prices are listed, matching the reference.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q14",
+      "question": "Is the estimate for a new AC free?",
+      "category": "pricing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Is the estimate for a new AC installation free?",
+      "retrieval_ms": 341,
+      "answer_ms": 1160,
+      "retrieved": [
+        {
+          "id": "booking_free-estimates_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.6316,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.5951,
+          "kept": true
+        },
+        {
+          "id": "service_ac-installation-replacement-service-inclusions_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.583,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.501,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.4892,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.4727,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6316,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2756,
+      "answer": "Yes, MD Cold Services offers free in-home replacement estimates for a new AC system.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that MD Cold Services offers free in-home replacement estimates for a new AC, as supported by multiple passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q15",
+      "question": "wats ur phone number",
+      "category": "contact",
+      "style": "typo",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What is the phone number of MD Cold Services?",
+      "retrieval_ms": 361,
+      "answer_ms": 1194,
+      "retrieved": [
+        {
+          "id": "contact_contact-details_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.6949,
+          "kept": true
+        },
+        {
+          "id": "booking_how-to-book-a-service_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.6109,
+          "kept": true
+        },
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.6049,
+          "kept": true
+        },
+        {
+          "id": "booking_how-to-book-ac-repair-service_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.6014,
+          "kept": true
+        },
+        {
+          "id": "other_services-not-mentioned-by-md-cold-services_1",
+          "source": "10_other.md",
+          "score": 0.5927,
+          "kept": true
+        },
+        {
+          "id": "hours_emergency-and-after-hours-availability_1",
+          "source": "02_hours.md",
+          "score": 0.5911,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6949,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2814,
+      "answer": "The phone number for MD Cold Services 24/7 service and emergency line is (786) 797-6193.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The chatbot correctly provided the 24/7 service and emergency phone number as stated in the reference and supported by multiple passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q16",
+      "question": "Do you have an email address?",
+      "category": "contact",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What is the email address for MD Cold Services?",
+      "retrieval_ms": 344,
+      "answer_ms": 1159,
+      "retrieved": [
+        {
+          "id": "contact_contact-details_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.6631,
+          "kept": true
+        },
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.5992,
+          "kept": true
+        },
+        {
+          "id": "booking_how-to-book-a-service_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.5749,
+          "kept": true
+        },
+        {
+          "id": "hours_holiday-hours_1",
+          "source": "02_hours.md",
+          "score": 0.5642,
+          "kept": true
+        },
+        {
+          "id": "contact_social-media-links_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5524,
+          "kept": true
+        },
+        {
+          "id": "hours_regular-business-hours_1",
+          "source": "02_hours.md",
+          "score": 0.5512,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6631,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2779,
+      "answer": "Yes, the email address for MD Cold Services is mdcoldservices@gmail.com.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The chatbot correctly provides the email address exactly as stated in the reference and supported passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q17",
+      "question": "where are you located",
+      "category": "contact",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Where is MD Cold Services located?",
+      "retrieval_ms": 350,
+      "answer_ms": 1195,
+      "retrieved": [
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.6487,
+          "kept": true
+        },
+        {
+          "id": "contact_contact-details_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.6426,
+          "kept": true
+        },
+        {
+          "id": "hours_holiday-hours_1",
+          "source": "02_hours.md",
+          "score": 0.5767,
+          "kept": true
+        },
+        {
+          "id": "contact_social-media-links_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5563,
+          "kept": true
+        },
+        {
+          "id": "hours_regular-business-hours_1",
+          "source": "02_hours.md",
+          "score": 0.5523,
+          "kept": true
+        },
+        {
+          "id": "trust_experience-and-service-volume_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.5521,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.5,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6487,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2725,
+      "answer": "MD Cold Services' main operations hub is in Miami, FL 33176. The website does not provide a street address. For immediate service, you can call (786) 797-6193.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states the main operations hub location and notes the lack of a street address, matching the reference.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q18",
+      "question": "How do I book an appointment?",
+      "category": "booking",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "How do I book an appointment?",
+      "retrieval_ms": 329,
+      "answer_ms": 1691,
+      "retrieved": [
+        {
+          "id": "booking_how-to-book-a-service_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.5629,
+          "kept": true
+        },
+        {
+          "id": "booking_how-to-book-ac-repair-service_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.48,
+          "kept": true
+        },
+        {
+          "id": "booking_commercial-maintenance-consultation-requests_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.4031,
+          "kept": true
+        },
+        {
+          "id": "policy_cancellation-and-rescheduling-policy_1",
+          "source": "07_policies.md",
+          "score": 0.3947,
+          "kept": true
+        },
+        {
+          "id": "contact_contact-details_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.3327,
+          "kept": true
+        },
+        {
+          "id": "hours_response-time-and-priority-scheduling_1",
+          "source": "02_hours.md",
+          "score": 0.2943,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5629,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3594,
+      "answer": "You can book an appointment with MD Cold Services three ways: online through Housecall Pro at https://book.housecallpro.com/book/MD-Cold-Services/40f25dd932f94ff4bbe5c0b1277c4c04?v2=true, by calling the 24/7 service line at (786) 797-6193, or by emailing mdcoldservices@gmail.com for non-urgent requests. Would you like me to help you book now?",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer accurately lists all supported booking methods and contact details as in the reference and passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q19",
+      "question": "Do you service Pembroke Pines?",
+      "category": "service_area",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you provide HVAC services in Pembroke Pines?",
+      "retrieval_ms": 381,
+      "answer_ms": 1474,
+      "retrieved": [
+        {
+          "id": "service_heat-pump-services-overview_1",
+          "source": "03_services/heat-pump-services.md",
+          "score": 0.5818,
+          "kept": true
+        },
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.5649,
+          "kept": true
+        },
+        {
+          "id": "service_area_broward-county-service-areas_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5603,
+          "kept": true
+        },
+        {
+          "id": "service_area_service-area-overview_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5527,
+          "kept": true
+        },
+        {
+          "id": "faq_are-heat-pumps-a-good-option-for-south-florida_1",
+          "source": "06_faqs.md",
+          "score": 0.5449,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-coverage_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5437,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5818,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3120,
+      "answer": "Yes, MD Cold Services provides HVAC services in Pembroke Pines, Broward County. If you'd like, I can help you book a visit.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that MD Cold Services provides HVAC services in Pembroke Pines, which is explicitly listed as a service area in the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q20",
+      "question": "Coral Springs mein service dete ho?",
+      "category": "service_area",
+      "style": "roman_urdu",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you provide HVAC services in Coral Springs?",
+      "retrieval_ms": 355,
+      "answer_ms": 1294,
+      "retrieved": [
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.5728,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-hvac-services-overview_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.5635,
+          "kept": true
+        },
+        {
+          "id": "service_area_broward-county-service-areas_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5623,
+          "kept": true
+        },
+        {
+          "id": "service_area_service-area-overview_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5607,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-coverage_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5603,
+          "kept": true
+        },
+        {
+          "id": "service_heat-pump-services-overview_1",
+          "source": "03_services/heat-pump-services.md",
+          "score": 0.555,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5728,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2974,
+      "answer": "Yes, MD Cold Services provides HVAC services in Coral Springs, Broward County. You can call (786) 797-6193 to book a visit or for more information.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that MD Cold Services provides HVAC services in Coral Springs, which is explicitly listed in the service area, and the phone number is supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q21",
+      "question": "do u come to islamorada",
+      "category": "service_area",
+      "style": "typo",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you provide HVAC services in Islamorada?",
+      "retrieval_ms": 328,
+      "answer_ms": 1297,
+      "retrieved": [
+        {
+          "id": "service_area_upper-florida-keys-service-areas_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.6116,
+          "kept": true
+        },
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.5777,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-coverage_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5468,
+          "kept": true
+        },
+        {
+          "id": "service_area_service-area-overview_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5379,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-hvac-services-overview_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.5342,
+          "kept": true
+        },
+        {
+          "id": "overview_residential-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.5081,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6116,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2903,
+      "answer": "Yes, MD Cold Services provides professional HVAC repair, installation, and maintenance in Islamorada as part of the Upper Florida Keys service area. If you'd like, I can help you book a visit!",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that Islamorada is served as part of the Upper Florida Keys, which is supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q22",
+      "question": "Is Sunny Isles Beach covered?",
+      "category": "service_area",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you provide HVAC services in Sunny Isles Beach?",
+      "retrieval_ms": 343,
+      "answer_ms": 1231,
+      "retrieved": [
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.5857,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-coverage_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5808,
+          "kept": true
+        },
+        {
+          "id": "service_area_service-area-overview_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5701,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-hvac-services-overview_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.552,
+          "kept": true
+        },
+        {
+          "id": "service_heat-pump-services-overview_1",
+          "source": "03_services/heat-pump-services.md",
+          "score": 0.5518,
+          "kept": true
+        },
+        {
+          "id": "service_area_miami-dade-county-service-areas_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5302,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5857,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2799,
+      "answer": "Yes, MD Cold Services provides HVAC services in Sunny Isles Beach as part of Miami-Dade County. If you'd like, I can help you book a visit!",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that Sunny Isles Beach is covered, as it is explicitly listed in the Miami-Dade County service areas.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q23",
+      "question": "whats your license number",
+      "category": "trust",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What is your license number?",
+      "retrieval_ms": 652,
+      "answer_ms": 1130,
+      "retrieved": [
+        {
+          "id": "overview_florida-license-and-insurance_1",
+          "source": "00_business_overview.md",
+          "score": 0.4318,
+          "kept": true
+        },
+        {
+          "id": "policy_licensing-and-insurance_1",
+          "source": "07_policies.md",
+          "score": 0.4129,
+          "kept": true
+        },
+        {
+          "id": "trust_license-and-insurance_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.4115,
+          "kept": true
+        },
+        {
+          "id": "service_why-choose-md-cold-services-for-ac-repair_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.2669,
+          "kept": true
+        },
+        {
+          "id": "trust_why-choose-md-cold-services-for-ac-installation_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.2518,
+          "kept": true
+        },
+        {
+          "id": "service_why-choose-md-cold-services-for-attic-insulation_1",
+          "source": "03_services/attic-insulation.md",
+          "score": 0.2496,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4318,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3131,
+      "answer": "Our Florida State License number is CAC1824837. If you need any other information, feel free to ask!",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly provides the Florida State License number CAC1824837, which matches the reference and is fully supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q24",
+      "question": "How long have you been in business?",
+      "category": "trust",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "How long has MD Cold Services been in business?",
+      "retrieval_ms": 348,
+      "answer_ms": 1252,
+      "retrieved": [
+        {
+          "id": "trust_experience-and-service-volume_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.6613,
+          "kept": true
+        },
+        {
+          "id": "overview_experience-and-track-record_1",
+          "source": "00_business_overview.md",
+          "score": 0.6258,
+          "kept": true
+        },
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.6009,
+          "kept": true
+        },
+        {
+          "id": "service_why-choose-md-cold-services-for-ductwork_1",
+          "source": "03_services/ductwork-services.md",
+          "score": 0.5512,
+          "kept": true
+        },
+        {
+          "id": "service_why-choose-md-cold-services-for-mini-splits_1",
+          "source": "03_services/mini-split-systems.md",
+          "score": 0.5482,
+          "kept": true
+        },
+        {
+          "id": "service_why-choose-md-cold-services-for-ac-repair_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.547,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.5,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6613,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2884,
+      "answer": "MD Cold Services has over 16 years of professional HVAC experience serving South Florida.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that MD Cold Services has over 16 years of professional HVAC experience, matching the reference and supported by multiple passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q25",
+      "question": "what's your google rating",
+      "category": "trust",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What is your Google rating?",
+      "retrieval_ms": 357,
+      "answer_ms": 1251,
+      "retrieved": [
+        {
+          "id": "trust_google-reviews-and-ratings_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.5206,
+          "kept": true
+        },
+        {
+          "id": "overview_experience-and-track-record_1",
+          "source": "00_business_overview.md",
+          "score": 0.3494,
+          "kept": true
+        },
+        {
+          "id": "trust_awards-and-certifications_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.2397,
+          "kept": true
+        },
+        {
+          "id": "contact_social-media-links_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.2393,
+          "kept": true
+        },
+        {
+          "id": "policy_satisfaction-guarantee_1",
+          "source": "07_policies.md",
+          "score": 0.2002,
+          "kept": true
+        },
+        {
+          "id": "hours_response-time-and-priority-scheduling_1",
+          "source": "02_hours.md",
+          "score": 0.1939,
+          "kept": false
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5206,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2838,
+      "answer": "MD Cold Services has a 5.0 out of 5 Stars Google rating, labelled \"Google Verified\" and \"Verified 5-Star Google Reviews.\"",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The chatbot accurately states the Google rating and the labels as shown in the reference and passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q26",
+      "question": "are your techs background checked?",
+      "category": "trust",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Are your technicians background checked?",
+      "retrieval_ms": 349,
+      "answer_ms": 1172,
+      "retrieved": [
+        {
+          "id": "policy_licensing-and-insurance_1",
+          "source": "07_policies.md",
+          "score": 0.4642,
+          "kept": true
+        },
+        {
+          "id": "trust_license-and-insurance_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.4271,
+          "kept": true
+        },
+        {
+          "id": "overview_florida-license-and-insurance_1",
+          "source": "00_business_overview.md",
+          "score": 0.2985,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-inspect-the-existing-insulation-before-ad_1",
+          "source": "06_faqs.md",
+          "score": 0.2895,
+          "kept": true
+        },
+        {
+          "id": "service_why-choose-md-cold-services-for-ac-repair_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.2827,
+          "kept": true
+        },
+        {
+          "id": "trust_experience-and-service-volume_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.2784,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4642,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2687,
+      "answer": "Yes, MD Cold Services employs highly skilled, background-checked professional technicians.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the technicians are background-checked, as supported by multiple passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q27",
+      "question": "which brands do you fix",
+      "category": "product",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Which HVAC brands does MD Cold Services repair?",
+      "retrieval_ms": 312,
+      "answer_ms": 1151,
+      "retrieved": [
+        {
+          "id": "brands_hvac-brands-serviced-and-installed_1",
+          "source": "04_products/hvac-brands.md",
+          "score": 0.7943,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-service-all-major-ac-brands_1",
+          "source": "06_faqs.md",
+          "score": 0.7392,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-features_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.707,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-coverage_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.6702,
+          "kept": true
+        },
+        {
+          "id": "overview_residential-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.6465,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-hvac-services-overview_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.6302,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.7943,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2703,
+      "answer": "MD Cold Services repairs the following HVAC brands: Carrier, Rheem, Trane, Goodman, Daikin, Mitsubishi, and Lennox.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The chatbot correctly lists all the major brands mentioned in the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q28",
+      "question": "Do you offer financing?",
+      "category": "financing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you offer financing?",
+      "retrieval_ms": 358,
+      "answer_ms": 1410,
+      "retrieved": [
+        {
+          "id": "faq_do-you-offer-financing-for-a-new-ac-system_1",
+          "source": "06_faqs.md",
+          "score": 0.6562,
+          "kept": true
+        },
+        {
+          "id": "policy_financing-options-overview_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.5547,
+          "kept": true
+        },
+        {
+          "id": "policy_ac-installation-financing-policy_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.5126,
+          "kept": true
+        },
+        {
+          "id": "policy_wisetack-financing-details_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.4908,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-offer-preventive-maintenance-for-commerci_1",
+          "source": "06_faqs.md",
+          "score": 0.3096,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.2788,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.5,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6562,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2888,
+      "answer": "Yes, MD Cold Services offers financing for qualified customers through Synchrony, Ygrene, and Wisetack, subject to approval. If you'd like, I can help you get started with the application.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly lists all financing partners and the 'subject to approval' condition, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q29",
+      "question": "how long can ygrene financing go",
+      "category": "financing",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "How long can Ygrene financing go?",
+      "retrieval_ms": 323,
+      "answer_ms": 1179,
+      "retrieved": [
+        {
+          "id": "policy_ygrene-pace-financing-details_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.6439,
+          "kept": true
+        },
+        {
+          "id": "policy_financing-options-overview_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.4694,
+          "kept": true
+        },
+        {
+          "id": "policy_ac-installation-financing-policy_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.4064,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-offer-financing-for-a-new-ac-system_1",
+          "source": "06_faqs.md",
+          "score": 0.3784,
+          "kept": true
+        },
+        {
+          "id": "overview_experience-and-track-record_1",
+          "source": "00_business_overview.md",
+          "score": 0.2521,
+          "kept": true
+        },
+        {
+          "id": "policy_warranty-on-equipment-and-work_1",
+          "source": "07_policies.md",
+          "score": 0.2402,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6439,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2765,
+      "answer": "Ygrene financing may extend up to 20 years for qualifying HVAC upgrades and home improvement projects.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that Ygrene financing may extend up to 20 years, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q30",
+      "question": "my ac is blowing hot air",
+      "category": "troubleshooting",
+      "style": "symptom",
+      "answerable": true,
+      "multi_chunk": true,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "AC repair diagnostic visit price and how to book | Is 24/7 emergency AC repair service available?",
+      "retrieval_ms": 399,
+      "answer_ms": 1427,
+      "retrieved": [
+        {
+          "id": "faq_do-you-provide-emergency-ac-repair_1",
+          "source": "06_faqs.md",
+          "score": 0.749,
+          "kept": true
+        },
+        {
+          "id": "hours_emergency-and-after-hours-availability_1",
+          "source": "02_hours.md",
+          "score": 0.7311,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.6768,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.6705,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-features_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.6629,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.6165,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.749,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3178,
+      "answer": "Blowing hot air is a sign your system should be checked. The residential AC Repair Diagnostic is $99 as a limited-time offer, and this fee is waived if you complete the recommended repair with MD Cold Services. Additional charges may apply for after-hours or emergency service. You can call our 24/7 line at (786) 797-6193 to book a visit.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer accurately states the $99 diagnostic fee, the waiver if repair is done, mentions possible extra charges for after-hours, and provides the 24/7 phone number, all supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q31",
+      "question": "can u put a mini split in my garage",
+      "category": "service",
+      "style": "typo",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Mini split installation in garage",
+      "retrieval_ms": 353,
+      "answer_ms": 1358,
+      "retrieved": [
+        {
+          "id": "faq_where-can-a-mini-split-be-installed_1",
+          "source": "06_faqs.md",
+          "score": 0.5517,
+          "kept": true
+        },
+        {
+          "id": "service_ductless-mini-split-systems-service-overview_1",
+          "source": "03_services/mini-split-systems.md",
+          "score": 0.5008,
+          "kept": true
+        },
+        {
+          "id": "service_ductless-mini-split-systems-features_1",
+          "source": "03_services/mini-split-systems.md",
+          "score": 0.4579,
+          "kept": true
+        },
+        {
+          "id": "faq_what-is-a-ductless-mini-split-system_1",
+          "source": "06_faqs.md",
+          "score": 0.4032,
+          "kept": true
+        },
+        {
+          "id": "overview_residential-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.3789,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-vrf-vrv-system-services_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.3764,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5517,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2840,
+      "answer": "Yes, mini-splits can be installed in garages. They are commonly used in garages, additions, individual rooms, offices, and other areas where independent temperature control or a ductless solution is wanted. If you'd like, I can help you book a visit!",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that mini-splits can be installed in garages and this is directly supported by the retrieved passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q32",
+      "question": "difference between single zone and multi zone mini split?",
+      "category": "service",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Difference between single zone and multi zone mini split systems",
+      "retrieval_ms": 341,
+      "answer_ms": 1239,
+      "retrieved": [
+        {
+          "id": "faq_what-is-the-difference-between-single-zone-and-m_1",
+          "source": "06_faqs.md",
+          "score": 0.7424,
+          "kept": true
+        },
+        {
+          "id": "service_ductless-mini-split-systems-service-overview_1",
+          "source": "03_services/mini-split-systems.md",
+          "score": 0.5599,
+          "kept": true
+        },
+        {
+          "id": "service_ductless-mini-split-systems-features_1",
+          "source": "03_services/mini-split-systems.md",
+          "score": 0.525,
+          "kept": true
+        },
+        {
+          "id": "faq_what-is-a-ductless-mini-split-system_1",
+          "source": "06_faqs.md",
+          "score": 0.4716,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-vrf-vrv-system-services_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.4373,
+          "kept": true
+        },
+        {
+          "id": "overview_commercial-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.3331,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.7424,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2904,
+      "answer": "A single-zone mini-split serves one area with one indoor unit, while a multi-zone mini-split connects multiple indoor units to provide individual temperature control in several areas.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer accurately and faithfully restates the key facts from the reference and retrieved passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q33",
+      "question": "Do you work on Daikin VRF systems?",
+      "category": "service",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you work on Daikin VRF systems?",
+      "retrieval_ms": 341,
+      "answer_ms": 1389,
+      "retrieved": [
+        {
+          "id": "service_commercial-vrf-vrv-system-services_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.6062,
+          "kept": true
+        },
+        {
+          "id": "faq_what-types-of-commercial-hvac-systems-do-you-ser_1",
+          "source": "06_faqs.md",
+          "score": 0.5137,
+          "kept": true
+        },
+        {
+          "id": "brands_hvac-brands-serviced-and-installed_1",
+          "source": "04_products/hvac-brands.md",
+          "score": 0.4861,
+          "kept": true
+        },
+        {
+          "id": "overview_commercial-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.4745,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-install-energy-efficient-ac-systems_1",
+          "source": "06_faqs.md",
+          "score": 0.4708,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-hvac-services-overview_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.4446,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6062,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2962,
+      "answer": "Yes, MD Cold Services installs, diagnoses, repairs, and maintains Daikin VRF/VRV multi-zone systems. You can call (786) 797-6193 for service or to book a visit.",
+      "refused": false,
+      "must_include": 0.5,
+      "missing_facts": [
+        "Mitsubishi"
+      ],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that MD Cold Services works on Daikin VRF/VRV systems, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q34",
+      "question": "I own a restaurant, can you service our rooftop unit?",
+      "category": "service",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you provide service for rooftop units for restaurants?",
+      "retrieval_ms": 333,
+      "answer_ms": 1325,
+      "retrieved": [
+        {
+          "id": "service_commercial-rooftop-unit-rtu-services_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.6059,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-hvac-services-overview_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.5573,
+          "kept": true
+        },
+        {
+          "id": "overview_commercial-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.557,
+          "kept": true
+        },
+        {
+          "id": "faq_what-types-of-commercial-hvac-systems-do-you-ser_1",
+          "source": "06_faqs.md",
+          "score": 0.5415,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-provide-commercial-hvac-repair-and-replac_1",
+          "source": "06_faqs.md",
+          "score": 0.5045,
+          "kept": true
+        },
+        {
+          "id": "overview_residential-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.4376,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6059,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2866,
+      "answer": "Yes, MD Cold Services provides rooftop unit (RTU) services for restaurants, including diagnostics, repairs, equipment replacement, and preventive maintenance. If you'd like, I can help you book a visit. You can also call our 24/7 service line at (786) 797-6193.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that MD Cold Services services rooftop units for restaurants and lists the supported services, all of which are found in the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q35",
+      "question": "how do i know my ducts are leaking",
+      "category": "faq",
+      "style": "symptom",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "How do I know if my ducts are leaking?",
+      "retrieval_ms": 339,
+      "answer_ms": 1612,
+      "retrieved": [
+        {
+          "id": "faq_how-do-i-know-if-my-ductwork-needs-repair_1",
+          "source": "06_faqs.md",
+          "score": 0.6044,
+          "kept": true
+        },
+        {
+          "id": "faq_can-leaking-ductwork-affect-my-ac-system_1",
+          "source": "06_faqs.md",
+          "score": 0.5436,
+          "kept": true
+        },
+        {
+          "id": "service_ductwork-services-overview_1",
+          "source": "03_services/ductwork-services.md",
+          "score": 0.4871,
+          "kept": true
+        },
+        {
+          "id": "service_ductwork-services-list_1",
+          "source": "03_services/ductwork-services.md",
+          "score": 0.47,
+          "kept": true
+        },
+        {
+          "id": "service_commercial-ductwork-services_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.3796,
+          "kept": true
+        },
+        {
+          "id": "overview_attic-insulation-and-air-quality-services_1",
+          "source": "00_business_overview.md",
+          "score": 0.3151,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6044,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3300,
+      "answer": "Common signs your ductwork may be leaking include weak airflow, uneven room temperatures, excess dust, visible duct damage, unusually high energy bills, and difficulty keeping your property comfortable. If you notice these signs, it’s a good idea to have your system checked. We offer ductwork inspection, leak detection, sealing, and repair services. You can call us anytime at (786) 797-6193 to book a visit.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer accurately lists all the key signs of leaking ducts from the reference and only adds supported service and contact information.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q36",
+      "question": "Is a heat pump a good idea in South Florida?",
+      "category": "faq",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Is a heat pump a good idea in South Florida?",
+      "retrieval_ms": 369,
+      "answer_ms": 1264,
+      "retrieved": [
+        {
+          "id": "faq_are-heat-pumps-a-good-option-for-south-florida_1",
+          "source": "06_faqs.md",
+          "score": 0.7452,
+          "kept": true
+        },
+        {
+          "id": "service_heat-pump-services-overview_1",
+          "source": "03_services/heat-pump-services.md",
+          "score": 0.6022,
+          "kept": true
+        },
+        {
+          "id": "service_why-choose-md-cold-services-for-heat-pumps_1",
+          "source": "03_services/heat-pump-services.md",
+          "score": 0.4883,
+          "kept": true
+        },
+        {
+          "id": "faq_what-is-a-heat-pump_1",
+          "source": "06_faqs.md",
+          "score": 0.4501,
+          "kept": true
+        },
+        {
+          "id": "service_area_service-area-overview_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.3994,
+          "kept": true
+        },
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.3873,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.7452,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 2902,
+      "answer": "Yes, heat pumps are a good option for South Florida. They provide efficient cooling and also heating during cooler periods, making them well suited to the climate here.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that heat pumps are a good option for South Florida, providing efficient cooling and heating, as supported by the reference and passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q37",
+      "question": "are you open on sunday and does it cost extra?",
+      "category": "hours",
+      "style": "plain",
+      "answerable": true,
+      "multi_chunk": true,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Are you open on Sunday and does it cost extra?",
+      "retrieval_ms": 351,
+      "answer_ms": 1514,
+      "retrieved": [
+        {
+          "id": "hours_after-hours-and-emergency-service-charges_1",
+          "source": "02_hours.md",
+          "score": 0.4316,
+          "kept": true
+        },
+        {
+          "id": "hours_regular-business-hours_1",
+          "source": "02_hours.md",
+          "score": 0.3345,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-provide-emergency-ac-repair_1",
+          "source": "06_faqs.md",
+          "score": 0.2765,
+          "kept": true
+        },
+        {
+          "id": "pricing_summary-of-all-prices_1",
+          "source": "05_pricing.md",
+          "score": 0.2683,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.262,
+          "kept": true
+        },
+        {
+          "id": "pricing_commercial-service-call-and-diagnostic-pricing_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.2602,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4316,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3140,
+      "answer": "MD Cold Services does not state regular business hours or specific days of operation on its website, so we don't have that information here. However, we do offer 24/7 emergency service, including Sundays, and additional charges may apply for after-hours or weekend service. For urgent needs or to confirm details, please call (786) 797-6193.",
+      "refused": true,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that 24/7 emergency service is available (including Sundays), that regular hours are not stated, and that extra charges may apply for after-hours or weekend service, matching the reference.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q38",
+      "question": "Im an elite member, my ac died at 9pm. do i still pay for diagnostic?",
+      "category": "pricing",
+      "style": "typo",
+      "answerable": true,
+      "multi_chunk": true,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do elite members pay for diagnostic if AC dies at 9pm? | Is there 24/7 emergency service for elite members?",
+      "retrieval_ms": 388,
+      "answer_ms": 1533,
+      "retrieved": [
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5268,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.525,
+          "kept": true
+        },
+        {
+          "id": "hours_after-hours-and-emergency-service-charges_1",
+          "source": "02_hours.md",
+          "score": 0.5142,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.5081,
+          "kept": true
+        },
+        {
+          "id": "plan_elite-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.501,
+          "kept": true
+        },
+        {
+          "id": "hours_emergency-and-after-hours-availability_1",
+          "source": "02_hours.md",
+          "score": 0.4802,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5268,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 3460,
+      "answer": "As an Elite Comfort Plan member, the diagnostic fee is $0 during regular business hours for covered systems. Since 9pm is after regular business hours, after-hours pricing applies, and additional charges may apply for after-hours service. For emergency or after-hours service, please call our 24/7 line at (786) 797-6193 to book.",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the $0 diagnostic only applies during regular hours and that after-hours pricing applies, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q39",
+      "question": "ac pani tapka raha hai, raat ko emergency service milegi?",
+      "category": "emergency",
+      "style": "roman_urdu",
+      "answerable": true,
+      "multi_chunk": true,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "AC repair diagnostic visit price and how to book | Is emergency service available at night?",
+      "retrieval_ms": 361,
+      "answer_ms": 1557,
+      "retrieved": [
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.6768,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.6705,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.6165,
+          "kept": true
+        },
+        {
+          "id": "booking_how-to-book-ac-repair-service_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.6113,
+          "kept": true
+        },
+        {
+          "id": "pricing_commercial-service-call-and-diagnostic-pricing_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.5744,
+          "kept": true
+        },
+        {
+          "id": "hours_emergency-and-after-hours-availability_1",
+          "source": "02_hours.md",
+          "score": 0.5069,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6768,
+      "derived_facts": [],
+      "fact_recall": 1.0,
+      "total_ms": 4405,
+      "answer": "A dripping AC is a sign your system should be checked. The residential AC Repair Diagnostic is $99 as a limited-time offer, and this fee is waived if you complete the recommended repair with MD Cold Services. For emergency or after-hours service, additional charges may apply. You can book 24/7 emergency service by calling (786) 797-6193. Would you like me to help you book a visit?",
+      "refused": false,
+      "must_include": 1.0,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states 24/7 emergency service is available, gives the correct phone number, mentions possible extra charges for after-hours, and accurately describes the diagnostic fee policy.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q40",
+      "question": "i want a new ac in key largo can i pay monthly",
+      "category": "financing",
+      "style": "typo",
+      "answerable": true,
+      "multi_chunk": true,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Can I pay monthly for a new AC installation in Key Largo? | Do you offer AC installation services in Key Largo?",
+      "retrieval_ms": 388,
+      "answer_ms": 1398,
+      "retrieved": [
+        {
+          "id": "service_ac-installation-replacement-service-overview_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.599,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-coverage_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.599,
+          "kept": true
+        },
+        {
+          "id": "service_area_upper-florida-keys-service-areas_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5963,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-offer-financing-for-a-new-ac-system_1",
+          "source": "06_faqs.md",
+          "score": 0.5917,
+          "kept": true
+        },
+        {
+          "id": "policy_ac-installation-financing-policy_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.5581,
+          "kept": true
+        },
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.5405,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 0.6666666666666666,
+      "empty_after_threshold": false,
+      "top_score": 0.599,
+      "derived_facts": [],
+      "fact_recall": 0.5,
+      "total_ms": 3283,
+      "answer": "Yes, you can pay monthly for a new AC installation in Key Largo. MD Cold Services offers financing for qualified customers through Synchrony, Ygrene, and Wisetack, subject to approval. Key Largo is in the Upper Florida Keys service area. If you'd like, I can help you get started!",
+      "refused": false,
+      "must_include": 0.5,
+      "missing_facts": [
+        "free"
+      ],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": false,
+      "invented": false,
+      "judge_reason": "The answer correctly states that monthly payments (financing) are available for new AC installations in Key Largo, lists the financing partners, and confirms Key Largo is in the service area, all supported by the passages.",
+      "judge_correctness": 1.0,
+      "false_refusal": false
+    },
+    {
+      "id": "q41",
+      "question": "Do you repair gas furnaces?",
+      "category": "abstain",
+      "style": "plain",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you repair gas furnaces?",
+      "retrieval_ms": 361,
+      "answer_ms": 1067,
+      "retrieved": [
+        {
+          "id": "faq_can-you-repair-an-existing-heat-pump_1",
+          "source": "06_faqs.md",
+          "score": 0.5153,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-provide-commercial-hvac-repair-and-replac_1",
+          "source": "06_faqs.md",
+          "score": 0.5133,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-features_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.4449,
+          "kept": true
+        },
+        {
+          "id": "overview_residential-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.4277,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-coverage_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.4245,
+          "kept": true
+        },
+        {
+          "id": "service_heat-pump-services-list_1",
+          "source": "03_services/heat-pump-services.md",
+          "score": 0.4178,
+          "kept": true
+        }
+      ],
+      "source_hit": false,
+      "rr": 0.0,
+      "source_recall": 0.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5153,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 2648,
+      "answer": "I'm not sure about that one, and I don't want to guess. I can book a technician visit for you, or you can call us 24/7 at (786) 797-6193.",
+      "refused": true,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states uncertainty and offers to call or book, matching the reference and not inventing information.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q42",
+      "question": "What's the APR on Synchrony financing?",
+      "category": "abstain",
+      "style": "plain",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What is the APR on Synchrony financing?",
+      "retrieval_ms": 335,
+      "answer_ms": 1431,
+      "retrieved": [
+        {
+          "id": "policy_synchrony-financing-details_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.5487,
+          "kept": true
+        },
+        {
+          "id": "policy_financing-options-overview_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.503,
+          "kept": true
+        },
+        {
+          "id": "policy_ac-installation-financing-policy_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.4184,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-offer-financing-for-a-new-ac-system_1",
+          "source": "06_faqs.md",
+          "score": 0.388,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.2237,
+          "kept": true
+        },
+        {
+          "id": "plan_essential-comfort-plan_1",
+          "source": "05_pricing.md",
+          "score": 0.2097,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5487,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 3044,
+      "answer": "The website does not state APR, interest rates, loan terms, minimum amounts, down payments, or credit criteria for Synchrony financing. For more details, you can call (786) 797-6193.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states the APR and related terms are not on the website and offers the phone number, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q43",
+      "question": "how much does a new 3 ton ac cost installed",
+      "category": "abstain",
+      "style": "typo",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Cost of installing a new 3 ton AC",
+      "retrieval_ms": 326,
+      "answer_ms": 1379,
+      "retrieved": [
+        {
+          "id": "pricing_ac-installation-replacement-price_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.4906,
+          "kept": true
+        },
+        {
+          "id": "service_ac-installation-replacement-service-inclusions_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.4437,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.3842,
+          "kept": true
+        },
+        {
+          "id": "pricing_summary-of-all-prices_1",
+          "source": "05_pricing.md",
+          "score": 0.3739,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-install-energy-efficient-ac-systems_1",
+          "source": "06_faqs.md",
+          "score": 0.3668,
+          "kept": true
+        },
+        {
+          "id": "pricing_mini-split-system-price-information_1",
+          "source": "03_services/mini-split-systems.md",
+          "score": 0.3667,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.25,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4906,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 3185,
+      "answer": "The price of an AC installation or replacement at MD Cold Services is not stated on the website. Replacement estimates are free and done in the home. The technician will confirm the exact price on site. You can call (786) 797-6193 to book a free in-home estimate.",
+      "refused": true,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the price is not listed, offers a free in-home estimate, and provides the phone number, all supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q44",
+      "question": "What is your cancellation policy?",
+      "category": "abstain",
+      "style": "plain",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "What is your cancellation policy?",
+      "retrieval_ms": 397,
+      "answer_ms": 1214,
+      "retrieved": [
+        {
+          "id": "policy_cancellation-and-rescheduling-policy_1",
+          "source": "07_policies.md",
+          "score": 0.5018,
+          "kept": true
+        },
+        {
+          "id": "policy_refund-policy_1",
+          "source": "07_policies.md",
+          "score": 0.3836,
+          "kept": true
+        },
+        {
+          "id": "booking_how-to-book-a-service_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.3107,
+          "kept": true
+        },
+        {
+          "id": "hours_response-time-and-priority-scheduling_1",
+          "source": "02_hours.md",
+          "score": 0.291,
+          "kept": true
+        },
+        {
+          "id": "booking_after-submitting-a-service-request_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.2781,
+          "kept": true
+        },
+        {
+          "id": "booking_how-to-book-ac-repair-service_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.2473,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5018,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 2814,
+      "answer": "The website does not provide any information about appointment cancellation, rescheduling, or no-show policies. For details, please call (786) 797-6193.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer accurately states that the cancellation policy is not provided on the website and refers the customer to call, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q45",
+      "question": "do you take zelle or credit card",
+      "category": "abstain",
+      "style": "typo",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "payment",
+      "route_ok": false,
+      "search_query": "Do you accept Zelle or credit card payments?",
+      "retrieval_ms": 663,
+      "answer_ms": 1243,
+      "retrieved": [
+        {
+          "id": "booking_accepted-payment-methods_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.4212,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-offer-financing-for-a-new-ac-system_1",
+          "source": "06_faqs.md",
+          "score": 0.3535,
+          "kept": true
+        },
+        {
+          "id": "policy_financing-options-overview_1",
+          "source": "08_booking_and_payment.md",
+          "score": 0.324,
+          "kept": true
+        },
+        {
+          "id": "policy_ac-installation-financing-policy_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3053,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-provide-emergency-ac-repair_1",
+          "source": "06_faqs.md",
+          "score": 0.2258,
+          "kept": true
+        },
+        {
+          "id": "hours_after-hours-and-emergency-service-charges_1",
+          "source": "02_hours.md",
+          "score": 0.2195,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4212,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 3285,
+      "answer": "The website does not list accepted payment methods such as Zelle or credit card. For details, please call (786) 797-6193.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states that payment methods are not listed and provides the phone number, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q46",
+      "question": "Do you service Boca Raton?",
+      "category": "abstain",
+      "style": "plain",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you provide HVAC services in Boca Raton?",
+      "retrieval_ms": 342,
+      "answer_ms": 1334,
+      "retrieved": [
+        {
+          "id": "service_commercial-hvac-services-overview_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.5546,
+          "kept": true
+        },
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.5495,
+          "kept": true
+        },
+        {
+          "id": "service_area_service-area-overview_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.5433,
+          "kept": true
+        },
+        {
+          "id": "service_ac-repair-service-coverage_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5425,
+          "kept": true
+        },
+        {
+          "id": "service_heat-pump-services-overview_1",
+          "source": "03_services/heat-pump-services.md",
+          "score": 0.5373,
+          "kept": true
+        },
+        {
+          "id": "faq_are-heat-pumps-a-good-option-for-south-florida_1",
+          "source": "06_faqs.md",
+          "score": 0.5168,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5546,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 2910,
+      "answer": "Boca Raton is not listed as one of the main cities in our service areas of Miami-Dade County, Broward County, and the Upper Florida Keys. Please call us at (786) 797-6193 to confirm if we can service your location.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states that Boca Raton is not listed and suggests calling to confirm, matching the reference and not inventing information.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q47",
+      "question": "how long is the warranty on your labor",
+      "category": "abstain",
+      "style": "plain",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Warranty on labor",
+      "retrieval_ms": 356,
+      "answer_ms": 1197,
+      "retrieved": [
+        {
+          "id": "policy_warranty-on-equipment-and-work_1",
+          "source": "07_policies.md",
+          "score": 0.5051,
+          "kept": true
+        },
+        {
+          "id": "policy_ac-installation-warranty-policy_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.4917,
+          "kept": true
+        },
+        {
+          "id": "policy_satisfaction-guarantee_1",
+          "source": "07_policies.md",
+          "score": 0.3781,
+          "kept": true
+        },
+        {
+          "id": "trust_experience-and-service-volume_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.3347,
+          "kept": true
+        },
+        {
+          "id": "overview_experience-and-track-record_1",
+          "source": "00_business_overview.md",
+          "score": 0.3317,
+          "kept": true
+        },
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.3025,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5051,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 2762,
+      "answer": "The website does not state a labor or workmanship warranty from MD Cold Services. For more details, you can call (786) 797-6193.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the labor warranty is not mentioned and suggests calling for more details, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q48",
+      "question": "exactly how much is the after hours fee?",
+      "category": "abstain",
+      "style": "plain",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "How much is the after hours fee?",
+      "retrieval_ms": 439,
+      "answer_ms": 1253,
+      "retrieved": [
+        {
+          "id": "hours_after-hours-and-emergency-service-charges_1",
+          "source": "02_hours.md",
+          "score": 0.6075,
+          "kept": true
+        },
+        {
+          "id": "hours_emergency-and-after-hours-availability_1",
+          "source": "02_hours.md",
+          "score": 0.3956,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.3908,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.3683,
+          "kept": true
+        },
+        {
+          "id": "pricing_commercial-service-call-and-diagnostic-pricing_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.3286,
+          "kept": true
+        },
+        {
+          "id": "pricing_summary-of-all-prices_1",
+          "source": "05_pricing.md",
+          "score": 0.3218,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6075,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 2959,
+      "answer": "Additional charges may apply for after-hours or emergency service, but the website does not state the exact amounts. For details, please call (786) 797-6193.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the after-hours fee amount is not listed and suggests calling for details, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q49",
+      "question": "who owns MD Cold?",
+      "category": "abstain",
+      "style": "plain",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Who owns MD Cold?",
+      "retrieval_ms": 354,
+      "answer_ms": 1169,
+      "retrieved": [
+        {
+          "id": "overview_business-overview_1",
+          "source": "00_business_overview.md",
+          "score": 0.5438,
+          "kept": true
+        },
+        {
+          "id": "hours_holiday-hours_1",
+          "source": "02_hours.md",
+          "score": 0.5035,
+          "kept": true
+        },
+        {
+          "id": "overview_information-not-stated-on-website_1",
+          "source": "00_business_overview.md",
+          "score": 0.5031,
+          "kept": true
+        },
+        {
+          "id": "trust_license-and-insurance_1",
+          "source": "09_testimonials_and_trust.md",
+          "score": 0.4888,
+          "kept": true
+        },
+        {
+          "id": "contact_contact-details_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.4801,
+          "kept": true
+        },
+        {
+          "id": "contact_social-media-links_1",
+          "source": "01_contact_and_locations.md",
+          "score": 0.4785,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.5438,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 2729,
+      "answer": "We don't have information about the owner of MD Cold Services on the website. You can call (786) 797-6193 if you want to ask directly.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the owner information is not available and suggests calling, which is supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q50",
+      "question": "water heater install bhi karte ho?",
+      "category": "abstain",
+      "style": "roman_urdu",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "Do you install water heaters?",
+      "retrieval_ms": 331,
+      "answer_ms": 1143,
+      "retrieved": [
+        {
+          "id": "faq_do-you-install-energy-efficient-ac-systems_1",
+          "source": "06_faqs.md",
+          "score": 0.4191,
+          "kept": true
+        },
+        {
+          "id": "faq_do-you-provide-commercial-hvac-repair-and-replac_1",
+          "source": "06_faqs.md",
+          "score": 0.3898,
+          "kept": true
+        },
+        {
+          "id": "other_services-not-mentioned-by-md-cold-services_1",
+          "source": "10_other.md",
+          "score": 0.3673,
+          "kept": true
+        },
+        {
+          "id": "service_ac-installation-replacement-service-overview_1",
+          "source": "03_services/ac-installation-replacement.md",
+          "score": 0.3373,
+          "kept": true
+        },
+        {
+          "id": "brands_hvac-brands-serviced-and-installed_1",
+          "source": "04_products/hvac-brands.md",
+          "score": 0.3354,
+          "kept": true
+        },
+        {
+          "id": "overview_residential-hvac-services-offered_1",
+          "source": "00_business_overview.md",
+          "score": 0.3351,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 0.3333333333333333,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.4191,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 2992,
+      "answer": "We don't have information about water heater installation on our website. Please call (786) 797-6193 to ask.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states that water heater installation is not mentioned and provides the phone number, matching the reference answer and supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    },
+    {
+      "id": "q51",
+      "question": "when does the $99 diagnostic deal end?",
+      "category": "abstain",
+      "style": "plain",
+      "answerable": false,
+      "multi_chunk": false,
+      "intent": "question",
+      "route_ok": true,
+      "search_query": "When does the $99 diagnostic deal end?",
+      "retrieval_ms": 397,
+      "answer_ms": 1319,
+      "retrieved": [
+        {
+          "id": "other_ac-repair-diagnostic-limited-time-offer_1",
+          "source": "10_other.md",
+          "score": 0.6304,
+          "kept": true
+        },
+        {
+          "id": "pricing_ac-repair-diagnostic-price_1",
+          "source": "03_services/ac-repair.md",
+          "score": 0.5103,
+          "kept": true
+        },
+        {
+          "id": "faq_how-much-is-an-ac-diagnostic-service-call_1",
+          "source": "06_faqs.md",
+          "score": 0.4822,
+          "kept": true
+        },
+        {
+          "id": "policy_pricing-policy_1",
+          "source": "07_policies.md",
+          "score": 0.4019,
+          "kept": true
+        },
+        {
+          "id": "pricing_summary-of-all-prices_1",
+          "source": "05_pricing.md",
+          "score": 0.3997,
+          "kept": true
+        },
+        {
+          "id": "pricing_commercial-service-call-and-diagnostic-pricing_1",
+          "source": "03_services/commercial-hvac.md",
+          "score": 0.352,
+          "kept": true
+        }
+      ],
+      "source_hit": true,
+      "rr": 1.0,
+      "source_recall": 1.0,
+      "empty_after_threshold": false,
+      "top_score": 0.6304,
+      "derived_facts": [],
+      "fact_recall": null,
+      "total_ms": 2941,
+      "answer": "The website does not state an end date for the $99 diagnostic offer. If you want, I can help you book a visit or you can call (786) 797-6193 for more details.",
+      "refused": false,
+      "must_include": null,
+      "missing_facts": [],
+      "correctness": 1.0,
+      "faithful": true,
+      "unsupported_claims": [],
+      "abstained": true,
+      "invented": false,
+      "judge_reason": "The answer correctly states that the end date is not provided and offers to help or provide contact info, matching the reference and supported by the passages.",
+      "judge_correctness": 1.0,
+      "abstain_ok": true
+    }
+  ]
+}

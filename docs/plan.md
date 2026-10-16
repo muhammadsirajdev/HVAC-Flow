@@ -538,13 +538,9 @@ The agent server must be able to reach the email MCP. If the MCP runs only on so
 
 ### 9.1 Dependencies vs the current `backend/pyproject.toml`
 
-Already present: `fastapi`, `uvicorn`, `langgraph`, `langchain`, `langchain-groq`, `langgraph-checkpoint-postgres`, `psycopg[binary]`, `psycopg-pool`, `mcp`, `langchain-mcp-adapters`, `python-dotenv`, `jinja2` (email templates).
+Runtime: `fastapi`, `uvicorn`, `langgraph`, `langgraph-checkpoint-postgres`, `langchain-openai`, `langchain-groq`, `langchain-mcp-adapters`, `mcp`, `psycopg[binary]`, `psycopg-pool`, `pydantic-settings`, `chromadb`, `tiktoken`, `pyyaml`, `jinja2`, `apscheduler`, `httpx`, `anyio`. Dev: `pytest`.
 
-Added for the RAG pipeline: `langchain-openai`, `chromadb`, `tiktoken`, `pydantic-settings`, `pytest` (dev).
-
-Still to add **(proposed)**: `sqlalchemy`, `alembic`, `apscheduler`, `slack-sdk` (or `slack-bolt`), `phonenumbers`, `email-validator`, `httpx`, `tzdata`, and for tests `pytest-asyncio`, `respx`.
-
-Probably remove (not used by this project): `airportsdata`, `pycountry`, `langchain-tavily`, `tavily-python`, `nest-asyncio`.
+Removed as unused: `airportsdata`, `pycountry`, `langchain`, `langchain-community`, `langchain-tavily`, `tavily-python`, `nest-asyncio`, `requests`, `python-dotenv` (still installed through `pydantic-settings`). Not needed after all: `sqlalchemy`/`alembic` (idempotent `schema.sql`), `slack-sdk` (Slack MCP), `phonenumbers`/`email-validator` (`tools/validation.py`).
 
 ---
 
@@ -561,7 +557,7 @@ hvacX/
 │   ├── plan.md                      # this file
 │   └── Speed-to-Lead Scope Chatbot, Email and WhatsApp.docx
 └── backend/
-    ├── pyproject.toml / uv.lock / requirements.txt / .python-version
+    ├── pyproject.toml / uv.lock / .python-version
     ├── .env  (git-ignored)  ·  .env.example
     ├── knowledge/mdcold/             # KB source .md files (business docs)
     │   ├── 00_business_overview.md … 10_other.md, 03_services/, 04_products/

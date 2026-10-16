@@ -1,0 +1,138 @@
+[
+  {
+    "question": "What areas do you serve for HVAC services?",
+    "expected_ids": [
+      "service_area_service-area-overview_1"
+    ]
+  },
+  {
+    "question": "Do you offer 24/7 emergency AC repair?",
+    "expected_ids": [
+      "hours_emergency-and-after-hours-availability_1",
+      "faq_do-you-provide-emergency-ac-repair_1"
+    ]
+  },
+  {
+    "question": "How much does an AC repair diagnostic cost?",
+    "expected_ids": [
+      "pricing_ac-repair-diagnostic-price_1",
+      "faq_how-much-is-an-ac-diagnostic-service-call_1"
+    ]
+  },
+  {
+    "question": "What brands of AC do you service and install?",
+    "expected_ids": [
+      "brands_hvac-brands-serviced-and-installed_1",
+      "faq_do-you-service-all-major-ac-brands_1"
+    ]
+  },
+  {
+    "question": "How can I book a service appointment?",
+    "expected_ids": [
+      "booking_how-to-book-a-service_1"
+    ]
+  },
+  {
+    "question": "Do you offer financing for new AC systems?",
+    "expected_ids": [
+      "policy_ac-installation-financing-policy_1",
+      "faq_do-you-offer-financing-for-a-new-ac-system_1",
+      "policy_financing-options-overview_1"
+    ]
+  },
+  {
+    "question": "What is included in your maintenance plans?",
+    "expected_ids": [
+      "plan_essential-comfort-plan_1",
+      "plan_premium-comfort-plan_1",
+      "plan_elite-comfort-plan_1",
+      "service_15-point-hvac-inspection-in-maintenance-plans_1"
+    ]
+  },
+  {
+    "question": "What are your regular business hours?",
+    "expected_ids": [
+      "hours_regular-business-hours_1"
+    ]
+  },
+  {
+    "question": "How do I contact you for urgent service?",
+    "expected_ids": [
+      "contact_contact-details_1"
+    ]
+  },
+  {
+    "question": "Do you provide commercial HVAC services?",
+    "expected_ids": [
+      "overview_commercial-hvac-services-offered_1",
+      "service_commercial-hvac-services-overview_1",
+      "faq_do-you-provide-commercial-hvac-repair-and-replac_1"
+    ]
+  },
+  {
+    "question": "Can you repair ductwork or does it need to be replaced?",
+    "expected_ids": [
+      "faq_can-ductwork-be-repaired-or-does-it-have-to-be-r_1"
+    ]
+  },
+  {
+    "question": "Do you install ductless mini split systems?",
+    "expected_ids": [
+      "service_ductless-mini-split-systems-service-overview_1",
+      "faq_what-is-a-ductless-mini-split-system_1"
+    ]
+  },
+  {
+    "question": "What is your satisfaction guarantee?",
+    "expected_ids": [
+      "policy_satisfaction-guarantee_1"
+    ]
+  },
+  {
+    "question": "How do I know if my AC needs repair?",
+    "expected_ids": [
+      "faq_how-do-i-know-if-my-ac-needs-repair_1"
+    ]
+  },
+  {
+    "question": "Do you offer attic insulation services?",
+    "expected_ids": [
+      "overview_attic-insulation-and-air-quality-services_1",
+      "service_attic-insulation-service-overview_1"
+    ]
+  },
+  {
+    "question": "What payment methods do you accept?",
+    "expected_ids": [
+      "booking_accepted-payment-methods_1"
+    ]
+  },
+  {
+    "question": "How do I get a free estimate for a new AC?",
+    "expected_ids": [
+      "booking_free-estimates_1",
+      "pricing_ac-installation-replacement-price_1"
+    ]
+  },
+  {
+    "question": "Are there extra charges for after-hours or emergency service?",
+    "expected_ids": [
+      "hours_after-hours-and-emergency-service-charges_1",
+      "pricing_ac-repair-diagnostic-price_1"
+    ]
+  },
+  {
+    "question": "What is your warranty policy for new AC installations?",
+    "expected_ids": [
+      "policy_ac-installation-warranty-policy_1",
+      "policy_warranty-on-equipment-and-work_1"
+    ]
+  },
+  {
+    "question": "Do you offer preventive maintenance for commercial HVAC?",
+    "expected_ids": [
+      "plan_commercial-maintenance-agreements_1",
+      "faq_do-you-offer-preventive-maintenance-for-commerci_1"
+    ]
+  }
+]

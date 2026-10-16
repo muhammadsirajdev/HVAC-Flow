@@ -1,0 +1,23 @@
+{
+  "chunker_version": "067481f1db4215fd",
+  "chunker_model": "gpt-4.1",
+  "documents": {
+    "00_business_overview.md": "552d7b45a422624c37935630d8b1bca8eb18e7932fc5a983615c200821ec91c8",
+    "01_contact_and_locations.md": "b1ad1049ab3971428e74b996ebdba5503c2b13ff457993339538abc623e41492",
+    "02_hours.md": "5932fe02303f5a9e39070338700fd51e9470ebbd4821f0139ffb80f27b883a36",
+    "03_services/ac-installation-replacement.md": "e6295cd96fefc3609ed8b562173d66e158dcdef3fa8b6b5439fd844ff793375f",
+    "03_services/ac-repair.md": "3caf6ef3becf9669af592ea39457e6a426c76059c9af4fb9faed689434091c98",
+    "03_services/attic-insulation.md": "f37a9f7e257767d0de60a25d770b2c7ef8e67cd3690846c7b1a1133282e0a4d0",
+    "03_services/commercial-hvac.md": "49db1719587ebabb67add46d44c8252d1dbc084b095fd1de031d89d01d2937a9",
+    "03_services/ductwork-services.md": "4d6d5a89c6719d327697d0b3ba34327943c91f3a4aa92509d1da0f9bbbbb2a94",
+    "03_services/heat-pump-services.md": "b88a00b2fce92545233f60d66d79007c4a9654a4c7f340ce0d4de6e29c19640b",
+    "03_services/mini-split-systems.md": "eb1bbe67cf590dfe06cbce73dccc702eb753de7688f4e2f6da6ad45e4f6b4180",
+    "04_products/hvac-brands.md": "5b826bea337b02bf81129e83e3626c656a1a0d4611377e8478207ab75be44411",
+    "05_pricing.md": "a8cfcbdd680ce40a0f18d32f3cf82f87f0acbfa55742b9fb315590c59aafadc0",
+    "06_faqs.md": "44dd0ef1f8752fe62b29d3500341f81b8b3965f2424f822bf9e50a396341a61c",
+    "07_policies.md": "e01134bb07f13d0c456509f5ac60b338087e1d69edbbaf210b2a9cdaeb2c03da",
+    "08_booking_and_payment.md": "030c0ef6f133f8ab2b71e714e15d1780a2e50b33a9ea562bd0a787633c31f4a4",
+    "09_testimonials_and_trust.md": "d089fb14edac5bb248fa17a5aad36ab6e182caeb8bc453e245780fbb0b8fbb39",
+    "10_other.md": "d87db55c6320a83f5268cb6d9fac374b20da741e4594ee3b1de4c755586c46ac"
+  }
+}
