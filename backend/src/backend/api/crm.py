@@ -6,16 +6,18 @@
     /crm/activity     the latest happenings across all cases
     /crm/schedule     slots for the next days, open or booked
 
-It shows customer details and has no login yet, so it stays off in production (DEV_UI=false).
+Who sees what is decided by backend.core.demo.office_access: signed in -> everything; public demo ->
+contact details partly hidden (backend.core.privacy); OFFICE_PASSWORD without demo -> sign in first.
 """
 
 from __future__ import annotations
 
 from datetime import datetime, time, timedelta
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from backend.config import get_settings
+from backend.core import demo, privacy
 from backend.core.timeutil import business_tz, format_slot, now as business_now
 from backend.db.session import get_pool
 
@@ -23,9 +25,11 @@ router = APIRouter(prefix="/crm", tags=["crm"])
 STATUSES = ("open", "booked", "needs_person", "done", "closed", "cancelled")
 
 
-def _enabled() -> None:
+def _access(request: Request) -> bool:
+    """Dependency: 404 when the office is off; True when contact details must be partly hidden."""
     if not get_settings().dev_ui:
         raise HTTPException(404)
+    return demo.office_access(request)
 
 
 def _iso(dt: datetime | None) -> str | None:
@@ -38,17 +42,34 @@ def _day_start(offset: int = 0) -> datetime:
     return datetime.combine(d, time.min, tzinfo=business_tz())
 
 
-def _visit(row: dict) -> dict | None:
+def _hide(masked: bool, fn, value):
+    """privacy.<fn>(value) for the public demo's view; the value itself otherwise."""
+    return fn(value) if masked else value
+
+
+def _person(masked: bool, name, email, phone) -> dict:
+    return {"name": _hide(masked, privacy.name, name), "email": _hide(masked, privacy.email, email),
+            "phone": _hide(masked, privacy.phone, phone)}
+
+
+def _meta(meta: dict, masked: bool) -> dict:
+    """Message metadata; addresses in it (an email's From/To) are hidden like the rest."""
+    if not masked:
+        return meta
+    return {k: privacy.text(v) if isinstance(v, str) else v for k, v in meta.items()}
+
+
+def _visit(row: dict, masked: bool = False) -> dict | None:
     if not row.get("booking_id"):
         return None
-    return {"booking_id": row["booking_id"], "service": row["service"], "address": row["address"],
+    return {"booking_id": row["booking_id"], "service": row["service"],
+            "address": _hide(masked, privacy.address, row["address"]),
             "active": row.get("active", True), "starts_at": _iso(row["starts_at"]),
             "slot": format_slot(row["starts_at"]) if row.get("starts_at") else None}
 
 
 @router.get("/overview")
-def overview() -> dict:
-    _enabled()
+def overview(masked: bool = Depends(_access)) -> dict:
     s = get_settings()
     window = {"t0": _day_start(0), "t1": _day_start(1), "t2": _day_start(2)}
     with get_pool().connection() as conn:
@@ -76,15 +97,15 @@ def overview() -> dict:
         "by_status": {k: by_status.get(k, 0) for k in STATUSES},
         "by_channel": by_channel,
         **counts,
-        "next_visit": nxt and {"case_id": nxt["case_id"], "service": nxt["service"], "name": nxt["name"],
+        "next_visit": nxt and {"case_id": nxt["case_id"], "service": nxt["service"],
+                               "name": _hide(masked, privacy.name, nxt["name"]),
                                "starts_at": _iso(nxt["starts_at"]), "slot": format_slot(nxt["starts_at"])},
     }
 
 
 @router.get("/cases")
 def list_cases(status: str | None = None, channel: str | None = None, q: str | None = None,
-               limit: int = Query(100, ge=1, le=300)) -> dict:
-    _enabled()
+               limit: int = Query(100, ge=1, le=300), masked: bool = Depends(_access)) -> dict:
     q = (q or "").strip() or None
     params = {"status": status or None, "channel": channel or None, "limit": limit,
               "like": f"%{q}%" if q else None, "num": q.lstrip("#") if q else None}
@@ -112,19 +133,20 @@ def list_cases(status: str | None = None, channel: str | None = None, q: str | N
             ORDER BY COALESCE(ev.created_at, c.updated_at) DESC
             LIMIT %(limit)s""", params).fetchall()
     return {"cases": [{
-        "case_id": r["case_id"], "status": r["status"], "channel": r["channel"], "note": r["note"],
+        "case_id": r["case_id"], "status": r["status"], "channel": r["channel"],
+        "note": _hide(masked, privacy.text, r["note"]),
         "created_at": _iso(r["created_at"]), "updated_at": _iso(r["updated_at"]),
-        "customer": {"customer_id": r["customer_id"], "name": r["name"], "email": r["email"], "phone": r["phone"]},
-        "visit": _visit(r),
-        "last_event": r["last_status"] and {"to_status": r["last_status"], "reason": r["last_reason"],
+        "customer": {"customer_id": r["customer_id"], **_person(masked, r["name"], r["email"], r["phone"])},
+        "visit": _visit(r, masked),
+        "last_event": r["last_status"] and {"to_status": r["last_status"],
+                                            "reason": _hide(masked, privacy.text, r["last_reason"]),
                                             "at": _iso(r["last_at"])},
         "messages": r["messages"],
     } for r in rows]}
 
 
 @router.get("/cases/{case_id}")
-def case_detail(case_id: int) -> dict:
-    _enabled()
+def case_detail(case_id: int, masked: bool = Depends(_access)) -> dict:
     with get_pool().connection() as conn:
         case = conn.execute("""
             SELECT c.case_id, c.status::text AS status, c.channel, c.note, c.email_thread_id,
@@ -153,31 +175,33 @@ def case_detail(case_id: int) -> dict:
             (case["customer_id"], case_id)).fetchall()
     return {
         "case": {"case_id": case["case_id"], "status": case["status"], "channel": case["channel"],
-                 "note": case["note"], "email_thread": bool(case["email_thread_id"]),
+                 "note": _hide(masked, privacy.text, case["note"]), "email_thread": bool(case["email_thread_id"]),
                  "created_at": _iso(case["created_at"]), "updated_at": _iso(case["updated_at"]),
                  "closed_at": _iso(case["closed_at"])},
-        "customer": {"customer_id": case["customer_id"], "name": case["name"], "email": case["email"],
-                     "phone": case["phone"], "address": case["address"], "opted_out": case["opted_out"],
+        "customer": {"customer_id": case["customer_id"], **_person(masked, case["name"], case["email"], case["phone"]),
+                     "address": _hide(masked, privacy.address, case["address"]), "opted_out": case["opted_out"],
                      "since": _iso(case["customer_since"])},
         "bookings": [{
-            "booking_id": b["booking_id"], "service": b["service"], "address": b["address"],
-            "problem": b["problem"], "technician": b["technician"], "active": b["active"],
+            "booking_id": b["booking_id"], "service": b["service"],
+            "address": _hide(masked, privacy.address, b["address"]),
+            "problem": _hide(masked, privacy.text, b["problem"]), "technician": b["technician"], "active": b["active"],
             "reminded": b["reminded"], "created_at": _iso(b["created_at"]),
             "confirmation_sent_at": _iso(b["confirmation_sent_at"]), "slack_posted_at": _iso(b["slack_posted_at"]),
             "starts_at": _iso(b["starts_at"]), "ends_at": _iso(b["ends_at"]), "slot": format_slot(b["starts_at"]),
         } for b in bookings],
-        "events": [{**e, "created_at": _iso(e["created_at"])} for e in events],
+        "events": [{**e, "reason": _hide(masked, privacy.text, e["reason"]), "created_at": _iso(e["created_at"])}
+                   for e in events],
         "messages": [{"message_id": m["message_id"], "channel": m["channel"], "direction": m["direction"],
-                      "body": (m["body"] or "")[:4000], "meta": m["meta"] or {},
+                      "body": _hide(masked, privacy.text, (m["body"] or "")[:4000]),
+                      "meta": _meta(m["meta"] or {}, masked),
                       "created_at": _iso(m["created_at"])} for m in messages],
         "other_cases": [{**o, "created_at": _iso(o["created_at"])} for o in others],
     }
 
 
 @router.get("/activity")
-def activity(limit: int = Query(40, ge=1, le=200)) -> dict:
+def activity(limit: int = Query(40, ge=1, le=200), masked: bool = Depends(_access)) -> dict:
     """Status changes and emails, newest first. Chat turns are left out: they would drown the rest."""
-    _enabled()
     with get_pool().connection() as conn:
         events = conn.execute("""
             SELECT e.event_id, e.case_id, e.from_status::text AS from_status, e.to_status::text AS to_status,
@@ -200,18 +224,23 @@ def activity(limit: int = Query(40, ge=1, le=200)) -> dict:
             ORDER BY m.message_id DESC LIMIT %s""", (limit,)).fetchall()
     items = [{"kind": "event", "id": f"e{e['event_id']}", "case_id": e["case_id"], "at": _iso(e["created_at"]),
               "from_status": e["from_status"], "to_status": e["to_status"], "reason": e["reason"],
-              "channel": e["channel"], "name": e["name"], "email": e["email"],
+              "channel": e["channel"], "name": _hide(masked, privacy.name, e["name"]),
+              "email": _hide(masked, privacy.email, e["email"]),
               "slot": format_slot(e["starts_at"]) if e["starts_at"] else None} for e in events]
     items += [{"kind": "email", "id": f"m{m['message_id']}", "case_id": m["case_id"], "at": _iso(m["created_at"]),
-               "direction": m["direction"], "channel": m["channel"], "name": m["name"], "email": m["email"],
-               "subject": (m["meta"] or {}).get("subject"), "preview": m["preview"]} for m in mails]
+               "direction": m["direction"], "channel": m["channel"], "name": _hide(masked, privacy.name, m["name"]),
+               "email": _hide(masked, privacy.email, m["email"]),
+               "subject": _hide(masked, privacy.text, (m["meta"] or {}).get("subject")),
+               "preview": _hide(masked, privacy.text, m["preview"])} for m in mails]
+    for i in items:
+        if i["kind"] == "event":
+            i["reason"] = _hide(masked, privacy.text, i["reason"])
     items.sort(key=lambda i: i["at"], reverse=True)
     return {"items": items[:limit]}
 
 
 @router.get("/schedule")
-def schedule(days: int = Query(7, ge=1, le=21)) -> dict:
-    _enabled()
+def schedule(days: int = Query(7, ge=1, le=21), masked: bool = Depends(_access)) -> dict:
     with get_pool().connection() as conn:
         rows = conn.execute("""
             SELECT s.slot_id, s.starts_at, s.ends_at, s.taken, b.case_id, b.service,
@@ -224,6 +253,7 @@ def schedule(days: int = Query(7, ge=1, le=21)) -> dict:
             (_day_start(0), _day_start(days))).fetchall()
     return {"tz": get_settings().business_tz, "slots": [{
         "slot_id": r["slot_id"], "starts_at": _iso(r["starts_at"]), "ends_at": _iso(r["ends_at"]),
-        "taken": r["taken"], "case_id": r["case_id"], "service": r["service"], "name": r["name"],
+        "taken": r["taken"], "case_id": r["case_id"], "service": r["service"],
+        "name": _hide(masked, privacy.name, r["name"]),
         "status": r["status"], "past": r["starts_at"] < business_now(),
     } for r in rows]}

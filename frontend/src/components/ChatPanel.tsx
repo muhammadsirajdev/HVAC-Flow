@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { useAccess } from "../lib/access";
 import { Link } from "react-router-dom";
 import { ChatReply, sendChat, sendChatFallback } from "../api";
 import { newSessionId, store } from "../lib/hooks";
@@ -176,6 +177,7 @@ export function ChatPanel({ phone, onBooked }: { phone: string; onBooked?: (case
 
 /** The work order that prints out of the chat when a visit is booked. */
 function Ticket({ caseId }: { caseId: number }) {
+  const { me } = useAccess();
   return (
     <div className="ticket" role="status">
       <div className="ticket__top">
@@ -183,7 +185,9 @@ function Ticket({ caseId }: { caseId: number }) {
         <span className="ticket__num">Case {caseId}</span>
       </div>
       <p className="ticket__body">
-        The confirmation goes out by email and the office gets a Slack message. The case is already in the office view.
+        {me?.demo_mode
+          ? "In the live product a confirmation email goes out now. In this demo it's written but not sent. The case is already in the office view."
+          : "The confirmation goes out by email and the office gets a Slack message. The case is already in the office view."}
       </p>
       <Link className="ticket__link" to={`/office?case=${caseId}`}>
         Open case {caseId} in the office

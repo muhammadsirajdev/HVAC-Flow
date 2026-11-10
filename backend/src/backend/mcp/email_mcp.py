@@ -11,13 +11,16 @@ Check the real tool names and arguments with `python scripts/list_mcp_tools.py`.
 
 from __future__ import annotations
 
+import logging
 import re
+import uuid
 from dataclasses import dataclass
 from email.utils import parseaddr
 
 from langchain_core.tools import BaseTool
 
 from backend.config import get_settings
+from backend.core.demo import live_recipient
 from backend.core.errors import MCPError
 from backend.mcp.client import call_tool, parse_json
 
@@ -42,7 +45,15 @@ class Email:
 
 def send_email(to: str, subject: str, body: str, tool: BaseTool | None = None,
                thread_id: str | None = None) -> SentEmail:
-    """Execute gmail_send_email; with `thread_id` it is a reply in that thread."""
+    """Execute gmail_send_email; with `thread_id` it is a reply in that thread.
+
+    DEMO_MODE: mail to anyone not on DEMO_LIVE_EMAILS is not sent. The caller gets a stand-in result,
+    so the case, transcript and confirmation flags are written exactly as for a real send.
+    """
+    if not live_recipient(to):
+        logging.getLogger(__name__).info("demo mode: email to %s written, not sent (%s)", to, subject)
+        stand_in = f"demo-{uuid.uuid4().hex[:16]}"
+        return SentEmail(message_id=stand_in, thread_id=thread_id or stand_in, raw='{"demo": true}')
     args = {"to": [to], "subject": subject, "body": body}
     if thread_id:
         args["threadId"] = thread_id

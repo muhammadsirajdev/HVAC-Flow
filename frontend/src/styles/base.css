@@ -535,3 +535,25 @@ select:focus-visible {
     right: 10px;
   }
 }
+
+/* ---------- public demo marker in the top bar ---------- */
+.demo-chip {
+  margin-left: auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--mango);
+  color: var(--mangrove);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.demo-chip + .conn {
+  margin-left: 14px;
+}
+
+@media (max-width: 640px) {
+  .demo-chip {
+    display: none;
+  }
+}

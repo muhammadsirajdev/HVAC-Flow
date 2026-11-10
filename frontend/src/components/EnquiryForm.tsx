@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { useAccess } from "../lib/access";
 import { Link } from "react-router-dom";
 import { EnquiryResult, sendEnquiry } from "../api";
 import { store } from "../lib/hooks";
@@ -8,6 +9,7 @@ const KEY = "mdcold.form";
 const EMPTY = { name: "", email: "", phone: "", message: "" };
 
 export function EnquiryForm({ inbox, onSent }: { inbox?: string; onSent?: (caseId: number | null) => void }) {
+  const { me } = useAccess();
   const [f, setF] = useState(() => store.get(KEY, EMPTY));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,8 +56,12 @@ export function EnquiryForm({ inbox, onSent }: { inbox?: string; onSent?: (caseI
           </div>
         )}
         <p className="enquiry__next">
-          {result.sent && "Check your inbox, and the spam folder if it's not there. "}
-          Reply to that email and the AI answers again in the same thread.
+          {result.preview
+            ? "In the live product this lands in the customer's inbox, and replying to it gets another answer in the same thread."
+            : <>
+                {result.sent && "Check your inbox, and the spam folder if it's not there. "}
+                Reply to that email and the AI answers again in the same thread.
+              </>}
         </p>
         <div className="enquiry__actions">
           {result.case_id && (
@@ -108,7 +114,9 @@ export function EnquiryForm({ inbox, onSent }: { inbox?: string; onSent?: (caseI
         <p className="enquiry__fine" aria-live="polite">
           {busy
             ? `The agent is reading it and writing the answer. This usually takes 10 to 30 seconds (${elapsed} s).`
-            : `A real email is sent to the address above${inbox ? `, from ${inbox}` : ""}.`}
+            : me?.demo_mode
+              ? "This is a demo: the AI writes the email and shows it here instead of sending it."
+              : `A real email is sent to the address above${inbox ? `, from ${inbox}` : ""}.`}
         </p>
       </div>
     </form>

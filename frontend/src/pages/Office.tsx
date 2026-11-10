@@ -6,6 +6,8 @@ import { CaseList } from "../components/CaseList";
 import { DispatchBoard } from "../components/DispatchBoard";
 import { Schedule } from "../components/Schedule";
 import { WorkOrder } from "../components/WorkOrder";
+import { SignIn } from "../components/SignIn";
+import { useAccess } from "../lib/access";
 import { setBusinessTz } from "../lib/format";
 import { usePoll } from "../lib/hooks";
 
@@ -17,6 +19,13 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 export default function Office() {
+  const { me } = useAccess();
+  if (!me) return <div className="office" aria-busy="true" />;
+  if (me.office === "locked") return <SignIn />;
+  return <OfficeDesk key={String(me.signed_in)} />;
+}
+
+function OfficeDesk() {
   const [params, setParams] = useSearchParams();
   const tab = (params.get("tab") as Tab) || "cases";
   const caseId = Number(params.get("case")) || null;
@@ -57,6 +66,7 @@ export default function Office() {
 
   return (
     <div className="office">
+      <AccessNote />
       <DispatchBoard
         data={overview.data}
         error={overview.error}
@@ -135,6 +145,35 @@ function EmptyDetail({ hasCases }: { hasCases: boolean }) {
           ? "Every chat, email and form a customer sends, and every booking, change and cancellation, shows up on the work order."
           : "Book a visit in the chat or send the enquiry form on the Try it page. The case appears here within seconds."}
       </p>
+    </div>
+  );
+}
+
+/** Public demo: details are partly hidden; the owner can sign in. Signed in: a way out. */
+function AccessNote() {
+  const { me, signOut } = useAccess();
+  const [open, setOpen] = useState(false);
+  if (!me) return null;
+
+  if (me.signed_in) {
+    return (
+      <div className="access access--in">
+        <p className="access__text">Signed in: you see every customer's full details.</p>
+        <button type="button" className="btn btn--quiet" onClick={signOut}>Sign out</button>
+      </div>
+    );
+  }
+  if (me.office !== "masked") return null;
+
+  return (
+    <div className="access">
+      <p className="access__text">
+        Public demo: names, phones, emails and addresses are partly hidden, and the cases reset every night.
+      </p>
+      {me.login_enabled && !open && (
+        <button type="button" className="btn btn--quiet" onClick={() => setOpen(true)}>Staff sign-in</button>
+      )}
+      {open && <SignIn compact onDone={() => setOpen(false)} />}
     </div>
   );
 }

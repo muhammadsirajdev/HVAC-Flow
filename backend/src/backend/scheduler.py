@@ -38,5 +38,10 @@ def start() -> BackgroundScheduler:
         scheduler.add_job(ensure_slots, "cron", hour=0, minute=5, args=[s.slots_days_ahead], id="slots",
                           next_run_time=datetime.now(scheduler.timezone), max_instances=1, coalesce=True)
         log.info("keeping %s days of slots open", s.slots_days_ahead)
+    if s.demo_mode and s.demo_reset_hour >= 0:
+        from backend.db.demo_data import reset_demo_data
+        scheduler.add_job(reset_demo_data, "cron", hour=s.demo_reset_hour, id="demo_reset",
+                          max_instances=1, coalesce=True)
+        log.info("demo data resets daily at %s:00", s.demo_reset_hour)
     scheduler.start()
     return scheduler

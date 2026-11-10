@@ -579,3 +579,13 @@
     padding-top: 0;
   }
 }
+
+.intro__demo {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--mango);
+  background: var(--mango-soft);
+  color: var(--mango-ink);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  font-size: var(--t-sm);
+}

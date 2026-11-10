@@ -22,7 +22,8 @@ PAGE = Path(__file__).resolve().parents[1] / "static" / "test_console.html"
 
 
 def _enabled() -> None:
-    if not get_settings().dev_ui:
+    s = get_settings()
+    if not s.dev_ui or s.demo_mode:         # the test console shows raw data: never on the public demo
         raise HTTPException(404)
 
 

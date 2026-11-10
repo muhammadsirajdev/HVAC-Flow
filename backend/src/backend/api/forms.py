@@ -1,15 +1,16 @@
 """POST /forms/enquiry: a website enquiry form, answered by email (Run B's form path).
 
-Enabled with DEV_UI=true for now: it sends a real email to the address typed in, so it needs the
-DEMO_MODE rate limits before it is open to the public.
+Enabled with DEV_UI=true. It emails the address typed in; with DEMO_MODE=true the email is only
+written and shown on the page (preview=true), unless the address is on DEMO_LIVE_EMAILS.
 """
 
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from backend.config import get_settings
+from backend.core import demo
 from backend.graphs.run_b_email import poller
 from backend.tools import notify
 from backend.tools.booking import create_needs_person_case, to_needs_person
@@ -32,10 +33,11 @@ class EnquiryResponse(BaseModel):
     to: str
     subject: str | None = None
     body: str | None = None     # the email as sent, for the page to show
+    preview: bool = False       # demo mode: written but not sent
     message: str
 
 
-@router.post("/enquiry", response_model=EnquiryResponse)
+@router.post("/enquiry", response_model=EnquiryResponse, dependencies=[Depends(demo.guard_form)])
 def enquiry(form: EnquiryForm) -> EnquiryResponse:
     s = get_settings()
     if not s.dev_ui:
@@ -75,5 +77,9 @@ def enquiry(form: EnquiryForm) -> EnquiryResponse:
             f"Your enquiry is saved as Case #{out.get('case_id')}, but the email could not be sent just now. "
             f"Our team will reply by hand."))
 
+    if not demo.live_recipient(email):
+        return EnquiryResponse(case_id=out["case_id"], sent=True, preview=True, to=email,
+                               subject=out.get("subject"), body=out.get("body"),
+                               message="This is a demo, so the answer is shown here instead of being emailed.")
     return EnquiryResponse(case_id=out["case_id"], sent=True, to=email, subject=out.get("subject"),
                            body=out.get("body"), message=f"Answer sent to {email}.")

@@ -2,9 +2,10 @@
 
 import logging
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from backend.config import get_settings
+from backend.core import demo
 from backend.graphs.run_a_chat import chat_turn
 from backend.schemas.chat import ChatRequest, ChatResponse, FallbackForm, FallbackResponse
 from backend.tools import notify, transcript
@@ -15,7 +16,7 @@ log = logging.getLogger(__name__)
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 
-@router.post("", response_model=ChatResponse)
+@router.post("", response_model=ChatResponse, dependencies=[Depends(demo.guard_chat)])
 def chat(req: ChatRequest, debug: bool = Query(False)) -> ChatResponse:
     # Sync endpoint: FastAPI runs it in a worker thread, the graph is synchronous.
     try:
@@ -43,7 +44,7 @@ def jsonable(value):
     return json.loads(json.dumps(value, default=str))
 
 
-@router.post("/fallback", response_model=FallbackResponse)
+@router.post("/fallback", response_model=FallbackResponse, dependencies=[Depends(demo.guard_form)])
 def fallback(form: FallbackForm) -> FallbackResponse:
     """The short form shown when the model is down: save a needs_person case, tell Slack."""
     phone, email = normalize_phone(form.phone), normalize_email(form.email)

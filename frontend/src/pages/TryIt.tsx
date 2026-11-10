@@ -4,11 +4,13 @@ import { getActivity, getOverview } from "../api";
 import { ActivityFeed } from "../components/ActivityFeed";
 import { ChatPanel } from "../components/ChatPanel";
 import { EnquiryForm } from "../components/EnquiryForm";
+import { useAccess } from "../lib/access";
 import { setBusinessTz } from "../lib/format";
 import { usePoll } from "../lib/hooks";
 
 export default function TryIt() {
   const navigate = useNavigate();
+  const { me } = useAccess();
   const overview = usePoll(getOverview, 60000);
   const activity = usePoll(() => getActivity(6), 5000);
   const seen = useRef<Set<string> | null>(null);
@@ -46,6 +48,12 @@ export default function TryIt() {
           Chat like a homeowner with a broken AC: ask a question, book a technician, then change or cancel it. Or send
           the form and get the answer by email. Every case lands in the office view.
         </p>
+        {me?.demo_mode && (
+          <p className="intro__demo">
+            This is a public demo. Emails are written and shown here instead of being sent, contact details are
+            partly hidden in the office, and everything resets each night. Please use made-up details.
+          </p>
+        )}
       </section>
 
       <div className="bench">

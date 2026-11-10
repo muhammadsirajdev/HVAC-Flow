@@ -1,13 +1,14 @@
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { getHealth } from "./api";
 import { FanMark } from "./components/Icon";
+import { AccessProvider, useAccess } from "./lib/access";
 import { usePoll } from "./lib/hooks";
 import Office from "./pages/Office";
 import TryIt from "./pages/TryIt";
 
 export default function App() {
   return (
-    <>
+    <AccessProvider>
       <a className="skip" href="#main">Skip to content</a>
       <TopBar />
       <main id="main">
@@ -17,12 +18,13 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-    </>
+    </AccessProvider>
   );
 }
 
 function TopBar() {
   const health = usePoll(getHealth, 20000);
+  const { me } = useAccess();
   const state = health.error ? "down" : health.data?.status === "ok" ? "up" : health.data ? "degraded" : "checking";
   const label = {
     up: "Connected",
@@ -44,6 +46,11 @@ function TopBar() {
           <NavLink to="/" end className="nav__link">Try it</NavLink>
           <NavLink to="/office" className="nav__link">Office</NavLink>
         </nav>
+        {me?.demo_mode && (
+          <span className="demo-chip" title="Emails are shown on the page instead of sent, and the data resets every night">
+            Public demo
+          </span>
+        )}
         <span className={`conn conn--${state}`} title={health.error ?? health.data?.database ?? ""}>
           <span className="conn__dot" aria-hidden="true" />
           <span className="conn__label">{label}</span>

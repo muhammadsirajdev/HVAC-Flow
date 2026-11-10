@@ -11,17 +11,56 @@ export class ApiError extends Error {
   }
 }
 
+// ---------- office sign-in token: kept in this browser; in memory if storage is blocked ----------
+const TOKEN_KEY = "hvacx.office";
+let memoryToken: { token: string; expires_at: number } | null = null;
+
+export const officeToken = {
+  get(): string | null {
+    let saved = memoryToken;
+    try {
+      const raw = window.localStorage.getItem(TOKEN_KEY);
+      if (raw) saved = JSON.parse(raw);
+    } catch {
+      /* storage blocked: use the in-memory copy */
+    }
+    return saved && saved.expires_at * 1000 > Date.now() ? saved.token : null;
+  },
+  set(token: string, expires_at: number) {
+    memoryToken = { token, expires_at };
+    try {
+      window.localStorage.setItem(TOKEN_KEY, JSON.stringify(memoryToken));
+    } catch {
+      /* storage blocked: signed in until the page reloads */
+    }
+  },
+  clear() {
+    memoryToken = null;
+    try {
+      window.localStorage.removeItem(TOKEN_KEY);
+    } catch {
+      /* nothing stored */
+    }
+  },
+};
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
+  const token = officeToken.get();
   try {
     res = await fetch(`${BASE}${path}`, {
       ...init,
-      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(init?.headers ?? {}),
+      },
     });
   } catch {
     throw new ApiError("The server can't be reached. Check that the API is running on port 8000.", 0);
   }
   if (!res.ok) {
+    if (res.status === 401 && token) officeToken.clear();     // expired, or the password changed
     const raw = await res.text();
     // The Vite dev proxy answers an empty 500 when nothing is listening on :8000.
     if (res.status >= 500 && !raw.trim()) {
@@ -77,6 +116,7 @@ export interface EnquiryResult {
   to: string;
   subject: string | null;
   body: string | null;
+  preview?: boolean;     // public demo: the email was written but not sent
   message: string;
 }
 
@@ -200,4 +240,16 @@ export const getCases = (p: { status?: string; channel?: string; q?: string }) =
 export const getCase = (id: number) => get<CaseDetail>(`/crm/cases/${id}`);
 export const getActivity = (limit = 40) => get<{ items: ActivityItem[] }>(`/crm/activity?limit=${limit}`);
 export const getSchedule = (days = 7) => get<{ tz: string; slots: ScheduleSlot[] }>(`/crm/schedule?days=${days}`);
+// ---------- who may see what ----------
+export interface Me {
+  demo_mode: boolean;
+  login_enabled: boolean;
+  signed_in: boolean;
+  office: "full" | "masked" | "locked";
+}
+
+export const getMe = () => get<Me>("/auth/me");
+export const login = (password: string) =>
+  post<{ token: string; expires_at: number }>("/auth/login", { password });
+
 export const getHealth = () => get<{ status: string; database: string }>("/health");

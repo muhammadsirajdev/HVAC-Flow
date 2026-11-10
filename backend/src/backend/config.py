@@ -82,6 +82,17 @@ class Settings(BaseSettings):
     widget_allowed_origins: str = "http://localhost:8000"
     dev_ui: bool = True                       # test console at / and /dev/*; set False in production
 
+    # --- Public demo (DEMO_MODE=true on a deployed demo) ---
+    # Emails are written but not sent (except to DEMO_LIVE_EMAILS), visitors are rate limited, the
+    # office shows contact details partly hidden unless signed in, and the data can reset daily.
+    demo_mode: bool = False
+    demo_live_emails: str = ""                # comma-separated addresses that still get real email
+    demo_chat_per_10min: int = 20             # chat messages per visitor
+    demo_forms_per_hour: int = 3              # enquiry/fallback forms per visitor
+    demo_ai_per_day: int = 300                # chat turns + forms, all visitors together (OpenAI cost cap)
+    demo_reset_hour: int = -1                 # 0-23: wipe and reseed demo data daily (business tz); -1 off
+    office_password: str = ""                 # set: the office needs a sign-in (full details)
+
     # --- RAG ---
     # The same embedding model MUST be used for ingestion and retrieval.
     rag_embedding_model: str = "text-embedding-3-large"

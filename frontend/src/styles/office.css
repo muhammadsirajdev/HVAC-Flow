@@ -1186,3 +1186,92 @@ button.reading:hover .reading__value {
     padding: 8px 6px;
   }
 }
+
+/* ---------- who sees what: demo notice, staff sign-in ---------- */
+.access {
+  background: var(--mango-soft);
+  color: var(--mango-ink);
+  border-bottom: 1px solid #efd3a4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px max(var(--gutter), calc((100% - var(--wide)) / 2 + var(--gutter)));
+}
+
+.access--in {
+  background: var(--seaglass-soft);
+  color: var(--mangrove);
+  border-bottom-color: var(--seaglass);
+}
+
+.access__text {
+  font-size: var(--t-sm);
+  flex: 1 1 320px;
+}
+
+.access .btn {
+  min-height: 36px;
+  padding-block: 6px;
+}
+
+.access .signin__form {
+  flex: 1 1 320px;
+  max-width: 440px;
+}
+
+.access .signin__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.signin {
+  max-width: 460px;
+  margin: clamp(40px, 10vh, 96px) auto;
+  padding: 0 var(--gutter);
+}
+
+.signin__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--mangrove);
+  color: var(--mango);
+  margin-bottom: 16px;
+}
+
+.signin__title {
+  font: 900 var(--t-3xl) / 0.95 var(--display);
+  margin-bottom: 10px;
+}
+
+.signin__body {
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+
+.signin__label {
+  display: block;
+  font-weight: 700;
+  font-size: var(--t-sm);
+  margin-bottom: 6px;
+}
+
+.signin__row {
+  display: flex;
+  gap: 8px;
+}
+
+.signin__row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.signin__row .btn {
+  flex: none;
+}

@@ -22,6 +22,7 @@ const PATHS: Record<string, string> = {
   clock: "M10 3.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13ZM10 6.5V10l2.5 1.5",
   steps:"M4 5h4v4H4zM12 11h4v4h-4zM8 7h2.5a1.5 1.5 0 0 1 1.5 1.5V11",
   open: "M11 3.5h5.5V9M16.5 3.5 9 11M14 12.5v4H3.5V6h4",
+  lock: "M5 9h10v8H5zM7 9V6.5a3 3 0 0 1 6 0V9M10 12v2",
 };
 
 export function Icon({ name, size = 18, className }: { name: keyof typeof PATHS | string; size?: number; className?: string }) {

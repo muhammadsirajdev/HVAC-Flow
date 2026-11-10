@@ -81,10 +81,16 @@ function Paper({ d, onCase }: { d: CaseDetail; onCase: (id: number) => void }) {
           </div>
           <ul className="facts">
             {d.customer.phone && (
-              <li><Icon name="phone" size={16} /><a href={`tel:${d.customer.phone}`}>{phone(d.customer.phone)}</a></li>
+              <li><Icon name="phone" size={16} />
+                {hidden(d.customer.phone) ? <span>{d.customer.phone}</span>
+                  : <a href={`tel:${d.customer.phone}`}>{phone(d.customer.phone)}</a>}
+              </li>
             )}
             {d.customer.email && (
-              <li><Icon name="mail" size={16} /><a href={`mailto:${d.customer.email}`}>{d.customer.email}</a></li>
+              <li><Icon name="mail" size={16} />
+                {hidden(d.customer.email) ? <span>{d.customer.email}</span>
+                  : <a href={`mailto:${d.customer.email}`}>{d.customer.email}</a>}
+              </li>
             )}
             {(d.customer.address || active?.address) && (
               <li><Icon name="pin" size={16} /><span>{d.customer.address || active?.address}</span></li>
@@ -234,3 +240,6 @@ function MessageStep({ it, name }: { it: Extract<JourneyItem, { kind: "message" 
     </div>
   );
 }
+
+/** The public demo partly hides contact details ("•••"): those are shown as text, not call/email links. */
+const hidden = (value: string) => value.includes("•");
