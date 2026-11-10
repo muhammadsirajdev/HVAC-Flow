@@ -21,5 +21,6 @@ wheels/
 .coverage
 htmlcov/
 
-# Local data (Chroma vector store)
-data/
+# Local data. The Chroma index (data/chroma) IS committed: deployed builds need it.
+data/*
+!data/chroma/

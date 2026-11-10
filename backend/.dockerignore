@@ -1,0 +1,13 @@
+# Secrets never go into an image: settings come from the host's environment.
+.env
+.env.*
+
+.venv
+.pytest_cache
+tests
+**/__pycache__
+**/*.py[oc]
+
+# Only the Chroma index is needed from data/.
+data/*
+!data/chroma

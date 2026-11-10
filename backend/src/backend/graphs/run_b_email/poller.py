@@ -13,6 +13,7 @@ emails are marked read for tidiness.
 from __future__ import annotations
 
 import logging
+from uuid import uuid4
 
 from langchain_core.messages import HumanMessage
 from psycopg.types.json import Jsonb
@@ -51,11 +52,16 @@ def poll_once(graph=None) -> int:
     return handled
 
 
-def handle(batch: list[Email], graph=None) -> bool:
-    """One customer turn: the new emails of one thread. True if answered or handed to a person."""
+def handle(batch: list[Email], graph=None, *, web_form: bool = False, outcome: dict | None = None) -> bool:
+    """One customer turn: the new emails of one thread. True if answered or handed to a person.
+
+    web_form: the batch is a form posted to our own API (see handle_form), not a real email.
+    outcome: filled with what happened (case_id, sent, to, body, ...) for callers that show it.
+    """
     s = get_settings()
+    outcome = {} if outcome is None else outcome
     last = batch[-1]
-    form = last.sender in {a.strip().lower() for a in s.email_form_senders.split(",") if a.strip()}
+    form = web_form or last.sender in {a.strip().lower() for a in s.email_form_senders.split(",") if a.strip()}
     if not form and mail.is_auto(last.sender, last.subject):
         return _ignore(batch, "auto-reply")
     text = "\n\n".join(t for t in (mail.strip_quoted(e.text) for e in batch) if t)
@@ -94,11 +100,12 @@ def handle(batch: list[Email], graph=None) -> bool:
             customer_id = upsert_customer(conn, ident["name"], ident["email"], ident["phone"], None)["customer_id"]
             case = cases.get_open_case(conn, customer_id)
             if case is None:
-                case = cases.open_case(conn, customer_id, "email")
+                case = cases.open_case(conn, customer_id, "form" if form else "email")
                 if not form:
                     cases.set_email_thread(conn, case["case_id"], last.thread_id)
         customer = _customer(conn, case)
-        case_id = case["case_id"]
+        case_id = outcome["case_id"] = case["case_id"]
+        outcome["status"] = case["status"]
         if case["status"] == "needs_person":
             _record(conn, batch, case_id)
         else:
@@ -128,6 +135,9 @@ def handle(batch: list[Email], graph=None) -> bool:
     }, config)
 
     if out.get("fallback_form"):                # the AI failed: leave the email for the next poll
+        outcome["ai_failed"] = True
+        if web_form:                            # no next poll for a posted form: the caller hands it on
+            return False
         n = _failures[last.message_id] = _failures.get(last.message_id, 0) + 1
         if n == 3:
             notify.post_alert(f":warning: The email agent's AI failed 3 times in a row on Case #{case_id} "
@@ -144,8 +154,10 @@ def handle(batch: list[Email], graph=None) -> bool:
         to, thread = last.sender, last.thread_id
         subject = last.subject if last.subject.lower().startswith("re:") else f"Re: {last.subject}"
     sent = _send(to, subject, body, thread, case_id)
-
     lb = out.get("last_booking")
+    outcome.update(sent=sent is not None, to=to, subject=subject, body=body,
+                   booked=bool(lb and out.get("letter")))
+
     with get_pool().connection() as conn:
         _record(conn, batch, case_id)
         if sent:
@@ -162,6 +174,27 @@ def handle(batch: list[Email], graph=None) -> bool:
     if out.get("booked") and lb:                # times offered for a change are recorded, not held
         set_pending_change(lb["booking_id"], [o["slot_id"] for o in out.get("offered_slots") or []])
     return True
+
+
+WEB_FORM_PREFIX = "webform:"
+
+
+def handle_form(name: str, email: str, phone: str | None, message: str, graph=None) -> dict:
+    """A website enquiry form posted straight to our API (POST /forms/enquiry).
+
+    It takes the same path as a form email from EMAIL_FORM_SENDERS: a case for the customer, the
+    email graph, and the AI's answer emailed to the customer's address. Only the inbound hop through
+    Gmail is skipped. Returns the outcome (case_id, sent, to, body; ai_failed if the model was down).
+    """
+    mid = f"{WEB_FORM_PREFIX}{uuid4().hex}"
+    lines = [f"Name: {name}", f"Email: {email}", *([f"Phone: {phone}"] if phone else []), f"Message: {message}"]
+    s = get_settings()
+    letter = Email(message_id=mid, thread_id=mid, sender=email.lower(), sender_name=name,
+                   to=(s.email_agent_address or s.business_inbox).lower(),
+                   subject="Website enquiry form", text="\n".join(lines))
+    outcome: dict = {}
+    outcome["handled"] = handle([letter], graph, web_form=True, outcome=outcome)
+    return outcome
 
 
 def _booking_state(graph, config: dict, case_id: int) -> dict:
@@ -225,6 +258,8 @@ def _ignore(batch: list[Email], reason: str, case_id: int | None = None) -> bool
 
 def _mark_read(batch: list[Email]) -> None:
     for e in batch:
+        if e.message_id.startswith(WEB_FORM_PREFIX):     # posted form: not in Gmail
+            continue
         try:
             email_mcp.mark_read(e.message_id)
         except MCPError:

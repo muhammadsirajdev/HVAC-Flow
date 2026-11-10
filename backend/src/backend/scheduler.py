@@ -1,5 +1,5 @@
 """Background jobs (APScheduler, inside the app): the inbox poll (Run B), the Slack status
-check (Run C) and the daily reminders (Run D), each when enabled in .env. One instance of a job at a time: a slow run is never
+check (Run C), the daily reminders (Run D) and the rolling slot schedule, each when enabled in .env. One instance of a job at a time: a slow run is never
 overlapped by the next one."""
 
 from __future__ import annotations
@@ -31,5 +31,12 @@ def start() -> BackgroundScheduler:
         scheduler.add_job(send_reminders, "cron", hour=s.reminder_hour, id="reminders",
                           max_instances=1, coalesce=True)
         log.info("reminders daily at %s:00", s.reminder_hour)
+    if s.slots_days_ahead > 0:
+        from datetime import datetime
+
+        from backend.db.slots import ensure_slots
+        scheduler.add_job(ensure_slots, "cron", hour=0, minute=5, args=[s.slots_days_ahead], id="slots",
+                          next_run_time=datetime.now(scheduler.timezone), max_instances=1, coalesce=True)
+        log.info("keeping %s days of slots open", s.slots_days_ahead)
     scheduler.start()
     return scheduler

@@ -20,25 +20,68 @@ details and words the answers. Code makes every decision that changes data or re
 
 ## Contents
 
-1. [What it does](#what-it-does)
-2. [System architecture](#system-architecture)
-3. [A customer's journey end to end](#a-customers-journey-end-to-end)
-4. [Run A: website chat](#run-a-website-chat)
-5. [Run B: email agent](#run-b-email-agent)
-6. [Run C: job status from Slack](#run-c-job-status-from-slack)
-7. [Run D: day-before reminders](#run-d-day-before-reminders)
-8. [Knowledge base (RAG)](#knowledge-base-rag)
-9. [Case lifecycle](#case-lifecycle)
-10. [Guardrails](#guardrails)
-11. [MCP integrations](#mcp-integrations)
-12. [Data model](#data-model)
-13. [Tech stack](#tech-stack)
-14. [Project layout](#project-layout)
-15. [Getting started](#getting-started)
-16. [Configuration](#configuration)
-17. [Testing and evaluation](#testing-and-evaluation)
-18. [Known limitations](#known-limitations)
-19. [Roadmap](#roadmap)
+1. [Screenshots](#screenshots)
+2. [What it does](#what-it-does)
+3. [System architecture](#system-architecture)
+4. [A customer's journey end to end](#a-customers-journey-end-to-end)
+5. [Run A: website chat](#run-a-website-chat)
+6. [Run B: email agent](#run-b-email-agent)
+7. [Run C: job status from Slack](#run-c-job-status-from-slack)
+8. [Run D: day-before reminders](#run-d-day-before-reminders)
+9. [Knowledge base (RAG)](#knowledge-base-rag)
+10. [Case lifecycle](#case-lifecycle)
+11. [Guardrails](#guardrails)
+12. [MCP integrations](#mcp-integrations)
+13. [Data model](#data-model)
+14. [Tech stack](#tech-stack)
+15. [Project layout](#project-layout)
+16. [Getting started](#getting-started)
+17. [Configuration](#configuration)
+18. [Testing and evaluation](#testing-and-evaluation)
+19. [Known limitations](#known-limitations)
+20. [Roadmap](#roadmap)
+
+---
+
+## Screenshots
+
+The frontend ([frontend/](frontend/)) has two pages: **Try it**, where anyone can test the agents, and
+**Office**, a CRM that shows every case the agents handle. These were taken from real test runs.
+
+**Try it.** The website chat (Run A) on the left. On the right, the enquiry form, which the email agent
+(Run B) answers by email.
+
+![Try it page: website chat and enquiry form](docs/screenshots/01-try-it.png)
+
+**Office: cases.** The board at the top shows what needs a person and who is on the schedule. Cases can
+be searched and filtered by status and channel. Each case opens as a work order.
+
+![Office: case list and a website-form case](docs/screenshots/02-office-cases.png)
+
+**A chat booking, then changed by email.** The customer, the visit, whether the confirmation email,
+Slack post and reminder went out, and every step since. Cases from the chat and from email share one case history.
+
+![Work order for a visit booked in the chat](docs/screenshots/03-work-order-chat-booking.png)
+
+**The email thread.** Every email in and every AI answer out, in order. The line on the left takes
+the colour of the case's status at each point.
+
+![Journey of an email case](docs/screenshots/04-journey-email-case.png)
+
+**Schedule.** The next seven days of slots, booked or still open for the AI to offer, in Miami time.
+
+![Schedule of the next seven days](docs/screenshots/05-schedule.png)
+
+**Activity.** Everything that happened across all cases, newest first.
+
+![Activity feed](docs/screenshots/06-activity.png)
+
+<img src="docs/screenshots/07-phone-office.png" alt="Office work order on a phone" width="300" align="right">
+
+**On a phone.** Both pages work down to phone width. The work order stacks into one column, and the
+list and the case open one at a time.
+
+<br clear="right">
 
 ---
 
@@ -484,6 +527,7 @@ Schema: [backend/src/backend/db/schema.sql](backend/src/backend/db/schema.sql) (
 | LLM | OpenAI `gpt-4.1-mini` (Groq supported via `LLM_PROVIDER`), structured output with Pydantic |
 | RAG | Chroma (cosine), OpenAI `text-embedding-3-large`, `gpt-4.1` chunking and review |
 | API | FastAPI + Uvicorn |
+| Frontend | React 18 + TypeScript + Vite, React Router, hand-written CSS (no UI kit) |
 | Database | Postgres 16 (psycopg 3, connection pool) |
 | Integrations | Klavis Gmail and Slack MCP servers via `langchain-mcp-adapters` |
 | Scheduling | APScheduler (interval and cron jobs inside the app) |
@@ -498,6 +542,9 @@ Schema: [backend/src/backend/db/schema.sql](backend/src/backend/db/schema.sql) (
 hvacX/
 ├── docker-compose.yml                 # Postgres for local development
 ├── docs/plan.md                       # design, rules, acceptance checks
+├── docs/screenshots/                  # README screenshots
+├── frontend/                          # React app: Try it page + Office (CRM) view
+│   └── src/                           # pages/, components/, lib/ (formatting, polling), styles/
 └── backend/
     ├── knowledge/mdcold/              # KB source documents (+ build/: chunks, reports, evals)
     ├── scripts/                       # seed demo data, terminal chat, list MCP tools, resend notifications
@@ -538,6 +585,23 @@ uv run python scripts/seed_demo_client.py            # 14 days of demo slots
 uv run python -m backend.rag.ingest                  # build the knowledge base (once, or when docs change)
 uv run uvicorn backend.main:app --reload             # API + test console at http://localhost:8000/
 ```
+
+**Frontend** (Node 20+), in a second terminal while the API runs:
+
+```bash
+cd frontend
+npm install
+npm run dev                                          # http://localhost:5173
+```
+
+- **Try it** (`/`): the website chat and an enquiry form whose answer is emailed to you.
+- **Office** (`/office`): the CRM. Every case with its customer, visit, status history,
+  chat and email messages, plus the week's schedule and an activity feed. It updates every few seconds.
+
+The dev server proxies `/api` to `localhost:8000`. For a separate deployment, build with
+`VITE_API_URL=https://your-api npm run build` and add that site to `WIDGET_ALLOWED_ORIGINS`.
+The office view and the form need `DEV_UI=true`. They show customer details without a login, and
+the form sends real email, so keep them off on a public server until DEMO_MODE exists.
 
 **Background jobs** run inside the app when enabled in `.env`. Each can also be run once by hand for
 testing. These commands really send email:

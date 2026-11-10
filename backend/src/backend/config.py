@@ -78,6 +78,7 @@ class Settings(BaseSettings):
     min_lead_hours: int = 2                   # earliest slot offered: now + this
     late_change_hours: int = 2                # changes closer than this to the visit -> a person
     chat_amend_minutes: int = 60              # a booking can be changed in the SAME chat for this long
+    slots_days_ahead: int = 0                 # >0: keep this many days of slots open (start-up + daily)
     widget_allowed_origins: str = "http://localhost:8000"
     dev_ui: bool = True                       # test console at / and /dev/*; set False in production
 

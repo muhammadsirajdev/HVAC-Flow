@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Query
 from backend.config import get_settings
 from backend.graphs.run_a_chat import chat_turn
 from backend.schemas.chat import ChatRequest, ChatResponse, FallbackForm, FallbackResponse
-from backend.tools import notify
+from backend.tools import notify, transcript
 from backend.tools.booking import create_needs_person_case
 from backend.tools.validation import normalize_email, normalize_phone
 
@@ -25,6 +25,11 @@ def chat(req: ChatRequest, debug: bool = Query(False)) -> ChatResponse:
         phone = get_settings().business_phone
         return ChatResponse(reply=f"Sorry, something went wrong. Please leave your details in the "
                                   f"form or call us 24/7 at {phone}.", fallback_form=True)
+    try:
+        transcript.record_chat_turn(req.session_id, req.text, out["reply"], out["case_id"], {
+            "intent": out["intent"], "booked": out["booked"], "emergency": out["emergency"]})
+    except Exception:                       # the transcript is for people; never fail the chat over it
+        log.exception("could not store chat turn for session %s", req.session_id)
     show = debug and get_settings().dev_ui
     return ChatResponse(reply=out["reply"], intent=out["intent"], case_id=out["case_id"], booked=out["booked"],
                         fallback_form=out["fallback_form"], emergency=out["emergency"],

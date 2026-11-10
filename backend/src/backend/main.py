@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api import chat, dev, health
+from backend.api import chat, crm, dev, forms, health
 from backend.config import get_settings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(name)s: %(message)s")
@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(na
 async def lifespan(_: FastAPI):
     scheduler = None
     s = get_settings()
-    if s.email_poll_enabled or s.slack_status_enabled or s.reminders_enabled:
+    if s.email_poll_enabled or s.slack_status_enabled or s.reminders_enabled or s.slots_days_ahead > 0:
         from backend import scheduler as jobs
         scheduler = jobs.start()
     yield
@@ -38,3 +38,5 @@ app.include_router(health.router)
 app.include_router(chat.router)
 if get_settings().dev_ui:
     app.include_router(dev.router)      # test console at http://localhost:8000/
+    app.include_router(crm.router)      # office view data for the frontend (customer details, no login yet)
+    app.include_router(forms.router)    # website enquiry form -> answered by email (sends real email)
