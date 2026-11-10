@@ -12,6 +12,7 @@ details and words the answers. Code makes every decision that changes data or re
 
 | | |
 |---|---|
+| **Live demo** | [hvac-flow-olive.vercel.app](https://hvac-flow-olive.vercel.app): chat, enquiry form and the office view ([how the public demo works](#live-demo-and-deployment)) |
 | **Plan** | [docs/plan.md](docs/plan.md): full design, rules and acceptance checks |
 | **Scope** | [docs/](docs/): original scope document |
 | **Status** | Phase 1 complete (Runs A–D). Phase 2 (WhatsApp, Run E) and the embeddable widget are next |
@@ -36,10 +37,11 @@ details and words the answers. Code makes every decision that changes data or re
 14. [Tech stack](#tech-stack)
 15. [Project layout](#project-layout)
 16. [Getting started](#getting-started)
-17. [Configuration](#configuration)
-18. [Testing and evaluation](#testing-and-evaluation)
-19. [Known limitations](#known-limitations)
-20. [Roadmap](#roadmap)
+17. [Live demo and deployment](#live-demo-and-deployment)
+18. [Configuration](#configuration)
+19. [Testing and evaluation](#testing-and-evaluation)
+20. [Known limitations](#known-limitations)
+21. [Roadmap](#roadmap)
 
 ---
 
@@ -544,16 +546,21 @@ hvacX/
 ├── docs/plan.md                       # design, rules, acceptance checks
 ├── docs/screenshots/                  # README screenshots
 ├── frontend/                          # React app: Try it page + Office (CRM) view
-│   └── src/                           # pages/, components/, lib/ (formatting, polling), styles/
+│   ├── vercel.json                    # SPA rewrite for Vercel (public/_redirects for Cloudflare/Netlify)
+│   └── src/                           # pages/, components/, lib/ (formatting, polling, access), styles/
 └── backend/
     ├── knowledge/mdcold/              # KB source documents (+ build/: chunks, reports, evals)
-    ├── scripts/                       # seed demo data, terminal chat, list MCP tools, resend notifications
+    ├── Dockerfile                     # API image (Render or any Docker host)
+    ├── data/chroma/                   # built knowledge-base index (committed: deployed builds need it)
+    ├── scripts/                       # seed slots / demo data, copy_db, terminal chat, list MCP tools,
+    │                                  #   resend notifications
     ├── tests/                         # graph tests (Runs A-D) and offline RAG tests + eval dataset
     └── src/backend/
         ├── main.py                    # FastAPI app; starts the background jobs
         ├── scheduler.py               # APScheduler: email poll, Slack status, reminders
         ├── config.py                  # settings from .env
-        ├── api/                       # /chat, /chat/fallback, /health, dev console
+        ├── api/                       # /chat, /forms, /crm (office), /auth, /health, dev console
+        ├── core/                      # demo mode rules, privacy masking, rate limits, time, errors
         ├── graphs/
         │   ├── common/                # state types, LLM client, checkpointer
         │   ├── run_a_chat/            # chat graph, nodes, prompts
@@ -564,7 +571,7 @@ hvacX/
         │                              #   vectorstore, ingest, retriever, evaluate, evaluate_qa
         ├── tools/                     # booking, cases, customers, notify, guardrails, validation
         ├── mcp/                       # MCP client, Gmail and Slack adapters
-        ├── db/                        # schema.sql, connection pool, init
+        ├── db/                        # schema.sql, connection pool, init, slots, demo data
         └── templates/                 # email templates, safety message
 ```
 
@@ -600,8 +607,8 @@ npm run dev                                          # http://localhost:5173
 
 The dev server proxies `/api` to `localhost:8000`. For a separate deployment, build with
 `VITE_API_URL=https://your-api npm run build` and add that site to `WIDGET_ALLOWED_ORIGINS`.
-The office view and the form need `DEV_UI=true`. They show customer details without a login, and
-the form sends real email, so keep them off on a public server until DEMO_MODE exists.
+The office view and the form need `DEV_UI=true`. On a public server, also turn on `DEMO_MODE` and set
+`OFFICE_PASSWORD` (see [Live demo and deployment](#live-demo-and-deployment)).
 
 **Background jobs** run inside the app when enabled in `.env`. Each can also be run once by hand for
 testing. These commands really send email:
@@ -611,6 +618,56 @@ uv run python -m backend.graphs.run_b_email.poller          # one inbox poll
 uv run python -m backend.graphs.run_c_slack_status.graph    # one status-channel check
 uv run python -m backend.graphs.run_d_reminders.graph       # one reminder run
 uv run python scripts/chat_cli.py                           # chat with Run A in the terminal
+```
+
+---
+
+## Live demo and deployment
+
+**Try it:** [hvac-flow-olive.vercel.app](https://hvac-flow-olive.vercel.app). Chat with the front
+desk, book a visit, send the enquiry form, then open **Office** to see the case appear.
+
+### What the public demo does differently
+
+The live site runs with `DEMO_MODE=true`, so strangers can use it safely:
+
+| | In the demo | In production |
+|---|---|---|
+| **Emails** (form answers, booking confirmations, reminders, thank-yous) | Written by the agent and **shown on the page and in the office, not sent**. Only addresses on `DEMO_LIVE_EMAILS` receive real mail | Sent through Gmail (MCP) |
+| **Office (CRM)** | Names, phones, emails and addresses are **partly hidden** ("Maria G.", `ma•••@example.com`). Staff sign in with `OFFICE_PASSWORD` to see everything | Behind the office sign-in |
+| **Limits** | 20 chat messages per 10 min and 3 forms per hour per visitor; 300 AI requests a day in total (caps the OpenAI cost) | None |
+| **Data** | Seven made-up customers covering every status and channel, **reset every night** | Real cases |
+| Slack posts, booking rules, the knowledge base, the email agent | Exactly as in production | |
+
+**Why the emails appear on the page:** an open form that sends email to any address typed into it
+could be used to send mail to anyone from the business account. Showing the email instead keeps the
+demo safe, while everything around it (the agent writing it, the case, the booking, the office
+timeline) runs for real.
+
+**Seeing real delivery:** the email path is the same code in both modes; demo mode only skips the
+final Gmail call for addresses not on the list. The owner's address is on `DEMO_LIVE_EMAILS`, so in a
+live walkthrough the form is sent with that address and the answer lands in Gmail within about 30
+seconds, with the case number in the subject. Replying to it gets a new answer in the same thread.
+For someone else to receive real emails, their address is added to `DEMO_LIVE_EMAILS` for the session.
+
+### How it's hosted (all free tiers)
+
+| Part | Where | Notes |
+|---|---|---|
+| Frontend | **Vercel** | `frontend/`, Vite preset, `VITE_API_URL` = the API address; `vercel.json` sends every path to the app |
+| API + background jobs | **Render** web service (Docker) | Root directory `backend/`, built from [backend/Dockerfile](backend/Dockerfile); health check `/health` |
+| Database | **Supabase** Postgres | Use the **Session pooler** connection string (IPv4); the direct one is IPv6-only |
+| Keep-alive | **cron-job.org** | Calls `/health` every 10 minutes so the free Render service never sleeps (it would after 15 idle minutes) |
+
+The image includes the built knowledge base (`backend/data/chroma`), so nothing is re-embedded at
+start-up. On every start it creates any missing tables, and `SLOTS_DAYS_AHEAD=14` keeps two weeks of
+bookable slots open. Environment variables on the host must be entered **without quotes**.
+
+**Useful scripts** (in `backend/`):
+
+```bash
+uv run python scripts/copy_db.py --to "<postgres url>"   # copy all data, e.g. local -> Supabase
+uv run python scripts/seed_demo_data.py --yes            # EMPTY the database and load the demo customers
 ```
 
 ---
@@ -633,6 +690,14 @@ All settings live in `backend/.env` (template: [backend/.env.example](backend/.e
 | `REMINDERS_ENABLED`, `REMINDER_HOUR` | `false`, `18` | Run D |
 | `LATE_CHANGE_HOURS`, `MIN_LEAD_HOURS` | `2`, `2` | No changes within 2 h of a visit; no slot sooner than 2 h from now |
 | `KB_TOP_K`, `KB_MIN_SCORE`, `KB_MAX_PER_SOURCE` | `6`, `0.20`, `2` | Retrieval tuning |
+| `WIDGET_ALLOWED_ORIGINS` | `http://localhost:8000` | Sites allowed to call the API (the frontend's address) |
+| `SLOTS_DAYS_AHEAD` | `0` | Keep this many days of bookable slots open (start-up + nightly); `14` on a server |
+| `DEV_UI` | `true` | Office view, enquiry form and the backend test console |
+| `DEMO_MODE` | `false` | Public demo: emails shown not sent, visitor limits, office details partly hidden |
+| `DEMO_LIVE_EMAILS` | | Addresses that still receive real email in demo mode (comma-separated) |
+| `DEMO_CHAT_PER_10MIN`, `DEMO_FORMS_PER_HOUR`, `DEMO_AI_PER_DAY` | `20`, `3`, `300` | Visitor limits and the daily AI cap |
+| `DEMO_RESET_HOUR` | `-1` | 0-23: wipe and reload the demo customers daily at this hour; `-1` off |
+| `OFFICE_PASSWORD` | | Staff sign-in for the office (full details); empty = no sign-in |
 
 ---
 
@@ -640,7 +705,7 @@ All settings live in `backend/.env` (template: [backend/.env.example](backend/.e
 
 ```bash
 cd backend
-uv run pytest                                # 65 tests, no network: fake LLM, DB, MCP
+uv run pytest                                # 71 tests, no network: fake LLM, DB, MCP
 uv run python -m backend.rag.evaluate_qa     # end-to-end RAG eval (uses the OpenAI API)
 uv run python -m backend.rag.evaluate        # retrieval only: hit@k, MRR, threshold suggestion
 ```
@@ -651,6 +716,7 @@ uv run python -m backend.rag.evaluate        # retrieval only: hit@k, MRR, thres
 | `tests/graphs/test_run_b_email.py` | Email rules (auto-reply, quoted text, form parsing), show-then-change flow, exact time, unverified sender, cancel with yes, hand-off to a person |
 | `tests/graphs/test_run_c_slack_status.py` | Status message parsing, thank-you once, failures stay open |
 | `tests/graphs/test_run_d_reminders.py` | Tomorrow's window, mark once, failed send alert, unanswered change alert |
+| `tests/test_demo.py` | Demo mode: masking, office sign-in tokens, visitor limits, emails not sent |
 | `tests/rag/` | Offline pipeline checks + the 51-question eval dataset |
 
 ---
